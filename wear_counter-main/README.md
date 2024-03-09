@@ -1,16 +1,14 @@
-# Counter
+# Como Executar
 
-A Wear OS App to Count
+Olá Zé,
 
-## Getting Started
+Para executares este processo, segue estes passos:
 
-This project is a starting point for a Flutter application.
+1. Ativa as opções de desenvolvedor no teu relógio.
+2. Dirige-te à opção "Adicionar dispositivo" no relógio.
+3. No teu computador, abre o terminal e executa o comando `adb connect 192.168.1.100:5555`, com as informações do teu relógio.
+4. Insere o PIN quando solicitado no terminal.
+5. Após a conexão bem-sucedida, executa o comando `connected to 192.168.1.100:5555` no terminal.
+6. Selecciona o relógio como dispositivo alvo e executa `flutter run` no terminal.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Para mais informações detalhadas sobre depuração em dispositivos Wear OS, consulta a documentação oficial aqui: [Depuração em Dispositivos Wear OS](https://developer.android.com/training/wearables/get-started/debugging)
