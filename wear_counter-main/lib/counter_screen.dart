@@ -13,6 +13,7 @@ class CounterScreen extends StatefulWidget {
 class _CounterScreenState extends State<CounterScreen> {
   int _counter = 0;
 
+
   void _incrementCounter() => setState(() => _counter++);
 
   @override
@@ -48,3 +49,4 @@ class _CounterScreenState extends State<CounterScreen> {
     );
   }
 }
+
