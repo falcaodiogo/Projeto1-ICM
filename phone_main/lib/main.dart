@@ -7,10 +7,12 @@ void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    
     /*
     final MQTTManager manager = MQTTManager(host:'test.mosquitto.org',topic:'flutter/amp/cool',identifier:'ios');
     manager.initializeMQTTClient();
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
       home: ChangeNotifierProvider<MQTTAppState>(
         create: (_) => MQTTAppState(),
         child: Scaffold(
-          // backgroundColor: const Color.fromARGB(255, 19, 35, 44),
+          backgroundColor: const Color.fromARGB(255, 19, 35, 44),
           body: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               return SingleChildScrollView(
