@@ -9,7 +9,7 @@ class MQTTAppState with ChangeNotifier{
 
   void setReceivedText(String text) {
     _receivedText = text;
-    _historyText = _historyText + '\n' + _receivedText;
+    _historyText = '$_historyText\n$_receivedText';
     notifyListeners();
   }
   void setAppConnectionState(MQTTAppConnectionState state) {

@@ -2,6 +2,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:phone_main/mqtt/state/MQTTAppState.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
+// faz listen e dá publish de um topic
 class MQTTManager {
   // Private instance of client
   final MQTTAppState _currentState;
@@ -22,13 +23,14 @@ class MQTTManager {
         _topic = topic,
         _currentState = state;
 
+  // not autenticated nedeed
   void initializeMQTTClient() {
     _client = MqttServerClient(_host, _identifier);
     _client!.port = 1883;
     _client!.keepAlivePeriod = 20;
     _client!.onDisconnected = onDisconnected;
     _client!.secure = false;
-    _client!.logging(on: true);
+    _client!.logging(on: true); // for logging
 
     /// Add the successful connection callback
     _client!.onConnected = onConnected;
@@ -96,7 +98,7 @@ class MQTTManager {
 
       // final MqttPublishMessage recMess = c![0].payload;
       final String pt =
-          MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
+          MqttPublishPayload.bytesToStringAsString(recMess.payload.message!); // não mexer no !
       _currentState.setReceivedText(pt);
       print(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
