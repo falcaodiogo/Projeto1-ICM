@@ -20,6 +20,9 @@ class _MQTTViewState extends State<MQTTView> {
   final TextEditingController _topicTextController = TextEditingController();
   late MQTTAppState currentAppState;
   late MQTTManager manager;
+  static const backgroundColor = Color.fromARGB(255, 19, 35, 44);
+  static const accentColor = Color.fromARGB(255, 255, 238, 0);
+  static const textColor = Color.fromARGB(255, 224, 241, 255);
 
   @override
   void initState() {
@@ -70,9 +73,10 @@ class _MQTTViewState extends State<MQTTView> {
 
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
-      title: const Text('WearOS app', textAlign: TextAlign.center),
+      title: const Text('WearOS app', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: textColor),),
       centerTitle: true,
-      backgroundColor: Colors.black26,
+      backgroundColor: backgroundColor,
+      toolbarHeight: 60,
     );
   }
 
@@ -81,8 +85,8 @@ class _MQTTViewState extends State<MQTTView> {
       children: <Widget>[
         Expanded(
           child: Container(
-              color: Colors.deepOrangeAccent,
-              child: Text(status, textAlign: TextAlign.center)),
+              color: accentColor,
+              child: Text(status, textAlign: TextAlign.center, style: const TextStyle(color: backgroundColor),)),
         ),
       ],
     );
@@ -97,9 +101,7 @@ class _MQTTViewState extends State<MQTTView> {
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: <Widget>[
-          // Removed text field for broker address
           const SizedBox(height: 10),
-          // Removed text field for topic
           const SizedBox(height: 10),
           _buildPublishMessageRow(),
           const SizedBox(height: 10),
