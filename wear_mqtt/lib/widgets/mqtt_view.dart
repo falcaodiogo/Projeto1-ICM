@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:phone_main/mqtt/state/MQTTAppState.dart';
-import 'package:phone_main/mqtt/MQTTManager.dart';
+import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
+import 'package:phone_main/mqtt/mqttmanager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:workout/workout.dart';
 
@@ -33,13 +32,6 @@ class _MQTTViewState extends State<MQTTView> {
   @override
   void initState() {
     super.initState();
-
-    /*
-    _hostTextController.addListener(_printLatestValue);
-    _messageTextController.addListener(_printLatestValue);
-    _topicTextController.addListener(_printLatestValue);
-
-     */
   }
 
   @override
@@ -50,19 +42,9 @@ class _MQTTViewState extends State<MQTTView> {
     super.dispose();
   }
 
-  /*
-  _printLatestValue() {
-    print("Second text field: ${_hostTextController.text}");
-    print("Second text field: ${_messageTextController.text}");
-    print("Second text field: ${_topicTextController.text}");
-  }
-
-   */
-
   @override
   Widget build(BuildContext context) {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
-    // Keep a reference to the app state.
     currentAppState = appState;
     return SingleChildScrollView(
       child: Column(
@@ -107,7 +89,7 @@ class _MQTTViewState extends State<MQTTView> {
   }
 
   Widget _buildEditableColumn() {
-    // Assigning default values to broker address and topic
+    // são os valores que segui do tutorial de mqtt 
     _hostTextController.text = 'test.mosquitto.org';
     _topicTextController.text = 'flutter/amp/cool';
 
@@ -199,20 +181,16 @@ class _MQTTViewState extends State<MQTTView> {
   }
 
   Widget _buildSendButtonFrom(MQTTAppConnectionState state) {
-    // ignore: deprecated_member_use
     return ElevatedButton(
-      // color: Colors.green,
       onPressed: state == MQTTAppConnectionState.connected
           ? () {
               _publishMessage(_messageTextController.text);
             }
           : null,
-      // color: Colors.green,
       child: const Text('Send'), //
     );
   }
 
-  // Utility functions
   String _prepareStateMessageFrom(MQTTAppConnectionState state) {
     switch (state) {
       case MQTTAppConnectionState.connected:
@@ -226,7 +204,7 @@ class _MQTTViewState extends State<MQTTView> {
 
   void _configureAndConnect() {
     String osPrefix = Platform.isAndroid ? 'Android_' : 'iOS_';
-    String uniqueClientId = osPrefix + const Uuid().v4(); // Generate UUID v4
+    String uniqueClientId = osPrefix + const Uuid().v4();
 
     manager = MQTTManager(
         host: _hostTextController.text,
