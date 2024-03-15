@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/MQTTAppState.dart';
 import 'package:phone_main/mqtt/MQTTManager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:workout/workout.dart';
 
 class MQTTView extends StatefulWidget {
   const MQTTView({super.key});
@@ -18,10 +21,13 @@ class _MQTTViewState extends State<MQTTView> {
   final TextEditingController _hostTextController = TextEditingController();
   final TextEditingController _messageTextController = TextEditingController();
   final TextEditingController _topicTextController = TextEditingController();
+  final workout = Workout();
   late MQTTAppState currentAppState;
   late MQTTManager manager;
   static const backgroundColor = Color.fromARGB(255, 19, 35, 44);
   static const accentColor = Color.fromARGB(255, 255, 238, 0);
+  static const secondAccentColor = Color.fromARGB(255, 231, 224, 126);
+  static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
 
   @override
@@ -65,7 +71,7 @@ class _MQTTViewState extends State<MQTTView> {
           _buildConnectionStateText(
               _prepareStateMessageFrom(currentAppState.getAppConnectionState)),
           _buildEditableColumn(),
-          _buildScrollableTextWith(currentAppState.getHistoryText)
+          _buildScrollableTextWith(currentAppState.getHistoryText),
         ],
       ),
     );
@@ -73,10 +79,14 @@ class _MQTTViewState extends State<MQTTView> {
 
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
-      title: const Text('WearOS app', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: textColor),),
+      title: const Text(
+        'WearOS app',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            fontWeight: FontWeight.w500, color: textColor, fontSize: 15),
+      ),
       centerTitle: true,
       backgroundColor: backgroundColor,
-      toolbarHeight: 60,
     );
   }
 
@@ -86,7 +96,11 @@ class _MQTTViewState extends State<MQTTView> {
         Expanded(
           child: Container(
               color: accentColor,
-              child: Text(status, textAlign: TextAlign.center, style: const TextStyle(color: backgroundColor),)),
+              child: Text(
+                status,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: backgroundColor),
+              )),
         ),
       ],
     );
@@ -160,28 +174,24 @@ class _MQTTViewState extends State<MQTTView> {
   }
 
   Widget _buildConnecteButtonFrom(MQTTAppConnectionState state) {
+    bool isConnected = state == MQTTAppConnectionState.connected;
+
     return Row(
       children: <Widget>[
         Expanded(
-          // ignore: deprecated_member_use
-          child: ElevatedButton(
-            // color: Colors.lightBlueAccent,
-            onPressed: state == MQTTAppConnectionState.disconnected
-                ? _configureAndConnect
-                : null,
-            // color: Colors.lightBlueAccent,
-            child: const Text('Connect'), //
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          // ignore: deprecated_member_use
-          child: ElevatedButton(
-            // color: Colors.redAccent,
-            onPressed:
-                state == MQTTAppConnectionState.connected ? _disconnect : null,
-            // color: Colors.redAccent,
-            child: const Text('Disconnect'), //
+          child: Switch(
+            value: isConnected,
+            activeColor: thirdAccentColor,
+            activeTrackColor: accentColor,
+            inactiveThumbColor: secondAccentColor,
+            inactiveTrackColor: thirdAccentColor,
+            onChanged: (bool value) {
+              if (value) {
+                _configureAndConnect();
+              } else {
+                _disconnect();
+              }
+            },
           ),
         ),
       ],
@@ -225,6 +235,30 @@ class _MQTTViewState extends State<MQTTView> {
         state: currentAppState);
     manager.initializeMQTTClient();
     manager.connect();
+    _startHeartbeat();
+  }
+
+  void _startHeartbeat() {
+    double heartRate = 0;
+
+    const features = [
+    WorkoutFeature.heartRate,
+  ];
+
+    workout.start(exerciseType: ExerciseType.walking, features: features);
+
+    workout.stream.listen((event) {
+      setState(() {
+        heartRate = event.value;
+      });
+    });
+
+    const Duration heartbeatInterval = Duration(seconds: 4);
+    Timer.periodic(heartbeatInterval, (timer) {
+      String heartbeatMessage =
+          'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate';
+      manager.publish(heartbeatMessage);
+    });
   }
 
   void _disconnect() {
