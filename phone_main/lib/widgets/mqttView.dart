@@ -1,6 +1,5 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/MQTTAppState.dart';
 import 'package:phone_main/mqtt/MQTTManager.dart';
@@ -65,8 +64,10 @@ class _MQTTViewState extends State<MQTTView> {
       child: Column(
         children: <Widget>[
           _buildAppBar(context),
-          _buildConnectionStateText(
-              _prepareStateMessageFrom(currentAppState.getAppConnectionState)),
+          if (currentAppState.getAppConnectionState !=
+              MQTTAppConnectionState.connected)
+            _buildConnectionStateText(
+                _prepareStateMessageFrom(currentAppState.getAppConnectionState)),
           _buildEditableColumn(),
           _buildScrollableTextWith(currentAppState.getHistoryText),
         ],
@@ -111,49 +112,28 @@ class _MQTTViewState extends State<MQTTView> {
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: <Widget>[
-          const SizedBox(height: 10),
-          const SizedBox(height: 10),
-          _buildPublishMessageRow(),
-          const SizedBox(height: 10),
+          const SizedBox(height: 30),
+          if (currentAppState.getAppConnectionState ==
+              MQTTAppConnectionState.disconnected)
+            const Column(
+              children: [
+                Center(
+                  child: Text(
+                    "Connection is non\n-existent!",
+                    style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w500,
+                        color: textColor),
+                    textAlign: TextAlign.center, // Center the text horizontally
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 30),
           _buildConnecteButtonFrom(currentAppState.getAppConnectionState)
         ],
       ),
     );
-  }
-
-  Widget _buildPublishMessageRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        Expanded(
-          child: _buildTextFieldWith(_messageTextController, 'Enter a message',
-              currentAppState.getAppConnectionState),
-        ),
-        _buildSendButtonFrom(currentAppState.getAppConnectionState)
-      ],
-    );
-  }
-
-  Widget _buildTextFieldWith(TextEditingController controller, String hintText,
-      MQTTAppConnectionState state) {
-    bool shouldEnable = false;
-    if (controller == _messageTextController &&
-        state == MQTTAppConnectionState.connected) {
-      shouldEnable = true;
-    } else if ((controller == _hostTextController &&
-            state == MQTTAppConnectionState.disconnected) ||
-        (controller == _topicTextController &&
-            state == MQTTAppConnectionState.disconnected)) {
-      shouldEnable = true;
-    }
-    return TextField(
-        enabled: shouldEnable,
-        controller: controller,
-        decoration: InputDecoration(
-          contentPadding:
-              const EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
-          labelText: hintText,
-        ));
   }
 
   Widget _buildScrollableTextWith(String text) {
@@ -171,52 +151,40 @@ class _MQTTViewState extends State<MQTTView> {
 
   Widget _buildConnecteButtonFrom(MQTTAppConnectionState state) {
     bool isConnected = state == MQTTAppConnectionState.connected;
+    String connectionStatus = isConnected ? "Connected" : "Disconnected";
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Expanded(
-          child: Switch(
-            value: isConnected,
-            activeColor: thirdAccentColor,
-            activeTrackColor: accentColor,
-            inactiveThumbColor: secondAccentColor,
-            inactiveTrackColor: thirdAccentColor,
-            onChanged: (bool value) {
-              if (value) {
-                _configureAndConnect();
-              } else {
-                _disconnect();
-              }
-            },
-          ),
+        Text(connectionStatus, style: const TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500),),
+        const SizedBox(width: 14),
+        Switch(
+          value: isConnected,
+          activeColor: thirdAccentColor,
+          activeTrackColor: accentColor,
+          inactiveThumbColor: secondAccentColor,
+          inactiveTrackColor: thirdAccentColor,
+          onChanged: (bool value) {
+            if (value) {
+              _configureAndConnect();
+            } else {
+              _disconnect();
+            }
+          },
         ),
       ],
-    );
-  }
-
-  Widget _buildSendButtonFrom(MQTTAppConnectionState state) {
-    // ignore: deprecated_member_use
-    return ElevatedButton(
-      // color: Colors.green,
-      onPressed: state == MQTTAppConnectionState.connected
-          ? () {
-              _publishMessage(_messageTextController.text);
-            }
-          : null,
-      // color: Colors.green,
-      child: const Text('Send'), //
     );
   }
 
   // Utility functions
   String _prepareStateMessageFrom(MQTTAppConnectionState state) {
     switch (state) {
-      case MQTTAppConnectionState.connected:
-        return 'Connected';
       case MQTTAppConnectionState.connecting:
         return 'Connecting';
       case MQTTAppConnectionState.disconnected:
         return 'Disconnected';
+      case MQTTAppConnectionState.connected:
+        return '';
     }
   }
 
@@ -235,15 +203,5 @@ class _MQTTViewState extends State<MQTTView> {
 
   void _disconnect() {
     manager.disconnect();
-  }
-
-  void _publishMessage(String text) {
-    String osPrefix = 'Flutter_iOS';
-    if (Platform.isAndroid) {
-      osPrefix = 'Flutter_Android';
-    }
-    final String message = '$osPrefix says: $text';
-    manager.publish(message);
-    _messageTextController.clear();
   }
 }
