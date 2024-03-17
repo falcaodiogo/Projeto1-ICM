@@ -1,5 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:phone_main/widgets/countdown.dart';
+import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/MQTTAppState.dart';
 import 'package:phone_main/mqtt/MQTTManager.dart';
@@ -66,8 +68,8 @@ class _MQTTViewState extends State<MQTTView> {
           _buildAppBar(context),
           if (currentAppState.getAppConnectionState !=
               MQTTAppConnectionState.connected)
-            _buildConnectionStateText(
-                _prepareStateMessageFrom(currentAppState.getAppConnectionState)),
+            _buildConnectionStateText(_prepareStateMessageFrom(
+                currentAppState.getAppConnectionState)),
           _buildEditableColumn(),
           _buildScrollableTextWith(currentAppState.getHistoryText),
         ],
@@ -110,9 +112,10 @@ class _MQTTViewState extends State<MQTTView> {
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
+      // for centering the column, add mainAxisAlignment
       child: Column(
         children: <Widget>[
-          const SizedBox(height: 30),
+          const SizedBox(height: 200),
           if (currentAppState.getAppConnectionState ==
               MQTTAppConnectionState.disconnected)
             const Column(
@@ -121,7 +124,7 @@ class _MQTTViewState extends State<MQTTView> {
                   child: Text(
                     "Connection is non\n-existent!",
                     style: TextStyle(
-                        fontSize: 26,
+                        fontSize: 24,
                         fontWeight: FontWeight.w500,
                         color: textColor),
                     textAlign: TextAlign.center, // Center the text horizontally
@@ -151,26 +154,44 @@ class _MQTTViewState extends State<MQTTView> {
 
   Widget _buildConnecteButtonFrom(MQTTAppConnectionState state) {
     bool isConnected = state == MQTTAppConnectionState.connected;
-    String connectionStatus = isConnected ? "Connected" : "Disconnected";
+    String connectionStatus = isConnected ? "Connected" : "Connect";
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(connectionStatus, style: const TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w500),),
-        const SizedBox(width: 14),
-        Switch(
-          value: isConnected,
-          activeColor: thirdAccentColor,
-          activeTrackColor: accentColor,
-          inactiveThumbColor: secondAccentColor,
-          inactiveTrackColor: thirdAccentColor,
-          onChanged: (bool value) {
-            if (value) {
-              _configureAndConnect();
-            } else {
-              _disconnect();
-            }
-          },
+    return Column(
+      children: [
+        if (isConnected)
+          yellowButton("Start", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CountdownWidget()),
+            );
+          }
+          ),
+        // if connected, show size box
+        if (isConnected) const SizedBox(height: 90),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              connectionStatus,
+              style: const TextStyle(
+                  color: textColor, fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(width: 14),
+            Switch(
+              value: isConnected,
+              activeColor: thirdAccentColor,
+              activeTrackColor: accentColor,
+              inactiveThumbColor: secondAccentColor,
+              inactiveTrackColor: thirdAccentColor,
+              onChanged: (bool value) {
+                if (value) {
+                  _configureAndConnect();
+                } else {
+                  _disconnect();
+                }
+              },
+            ),
+          ],
         ),
       ],
     );
