@@ -11,13 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout phone_main
+      - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          repository: your-username/phone_main
-          ref: main
 
-      - name: Setup Dart SDK for phone_main
+      - name: Setup Dart SDK
         uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
       - name: Install dependencies for phone_main
@@ -31,15 +28,6 @@ jobs:
       - name: Run tests for phone_main
         run: dart test
         working-directory: phone_main
-
-      - name: Checkout wear_mqtt
-        uses: actions/checkout@v3
-        with:
-          repository: your-username/wear_mqtt
-          ref: main
-
-      - name: Setup Dart SDK for wear_mqtt
-        uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
       - name: Install dependencies for wear_mqtt
         run: dart pub get
