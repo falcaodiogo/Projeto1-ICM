@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:phone_main/widgets/appbar.dart';
 import 'package:phone_main/widgets/countdown.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
@@ -32,13 +33,6 @@ class _MQTTViewState extends State<MQTTView> {
   @override
   void initState() {
     super.initState();
-
-    /*
-    _hostTextController.addListener(_printLatestValue);
-    _messageTextController.addListener(_printLatestValue);
-    _topicTextController.addListener(_printLatestValue);
-
-     */
   }
 
   @override
@@ -49,48 +43,26 @@ class _MQTTViewState extends State<MQTTView> {
     super.dispose();
   }
 
-  /*
-  _printLatestValue() {
-    print("Second text field: ${_hostTextController.text}");
-    print("Second text field: ${_messageTextController.text}");
-    print("Second text field: ${_topicTextController.text}");
-  }
-
-   */
-
   @override
   Widget build(BuildContext context) {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
-    // Keep a reference to the app state.
     currentAppState = appState;
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          _buildAppBar(context),
+          appBar(context),
           if (currentAppState.getAppConnectionState !=
               MQTTAppConnectionState.connected)
-            _buildConnectionStateText(_prepareStateMessageFrom(
+            connectionStateText(_prepareStateMessageFrom(
                 currentAppState.getAppConnectionState)),
-          _buildEditableColumn(),
-          _buildScrollableTextWith(currentAppState.getHistoryText),
+          mainColumn(),
+          // _buildScrollableTextWith(currentAppState.getHistoryText),
         ],
       ),
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text(
-        'Phone app',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-      ),
-      centerTitle: true,
-      backgroundColor: backgroundColor,
-    );
-  }
-
-  Widget _buildConnectionStateText(String status) {
+  Widget connectionStateText(String status) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -106,14 +78,12 @@ class _MQTTViewState extends State<MQTTView> {
     );
   }
 
-  Widget _buildEditableColumn() {
-    // Assigning default values to broker address and topic
+  Widget mainColumn() {
     _hostTextController.text = 'test.mosquitto.org';
     _topicTextController.text = 'flutter/amp/cool';
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      // for centering the column, add mainAxisAlignment
       child: Column(
         children: <Widget>[
           const SizedBox(height: 200),
@@ -128,7 +98,7 @@ class _MQTTViewState extends State<MQTTView> {
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
                         color: textColor),
-                    textAlign: TextAlign.center, // Center the text horizontally
+                    textAlign: TextAlign.center, 
                   ),
                 ),
               ],
@@ -136,19 +106,6 @@ class _MQTTViewState extends State<MQTTView> {
           const SizedBox(height: 30),
           _buildConnecteButtonFrom(currentAppState.getAppConnectionState)
         ],
-      ),
-    );
-  }
-
-  Widget _buildScrollableTextWith(String text) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: SizedBox(
-        width: 400,
-        height: 200,
-        child: SingleChildScrollView(
-          child: Text(text),
-        ),
       ),
     );
   }
@@ -167,7 +124,6 @@ class _MQTTViewState extends State<MQTTView> {
             );
           }
           ),
-        // if connected, show size box
         if (isConnected) const SizedBox(height: 90),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -198,7 +154,6 @@ class _MQTTViewState extends State<MQTTView> {
     );
   }
 
-  // Utility functions
   String _prepareStateMessageFrom(MQTTAppConnectionState state) {
     switch (state) {
       case MQTTAppConnectionState.connecting:
@@ -226,4 +181,17 @@ class _MQTTViewState extends State<MQTTView> {
   void _disconnect() {
     manager.disconnect();
   }
+  
+  // Widget _buildScrollableTextWith(String text) {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(20.0),
+  //     child: SizedBox(
+  //       width: 400,
+  //       height: 200,
+  //       child: SingleChildScrollView(
+  //         child: Text(text),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

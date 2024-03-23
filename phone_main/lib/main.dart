@@ -8,19 +8,11 @@ void main() => runApp(const MyApp());
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
-    /*
-    final MQTTManager manager = MQTTManager(host:'test.mosquitto.org',topic:'flutter/amp/cool',identifier:'ios');
-    manager.initializeMQTTClient();
-
-     */
 
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Project 1 - ICM',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: const TextTheme(
