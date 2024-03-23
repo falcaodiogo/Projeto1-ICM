@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phone_main/widgets/countdown.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
@@ -162,7 +163,7 @@ class _MQTTViewState extends State<MQTTView> {
           yellowButton("Start", () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CountdownWidget()),
+              MaterialPageRoute(builder: (context) => Animate(child: CountdownWidget())),
             );
           }
           ),

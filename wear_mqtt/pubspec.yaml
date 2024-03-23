@@ -39,6 +39,7 @@ dependencies:
   provider: ^6.1.2
   uuid: ^4.3.3
   workout: ^0.6.3
+  bounce: ^1.0.2
 
 dev_dependencies:
   flutter_test:
