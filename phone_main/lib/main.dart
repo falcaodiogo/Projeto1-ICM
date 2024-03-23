@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phone_main/widgets/mqttView.dart';
+import 'package:phone_main/widgets/mqttview.dart';
 import 'package:phone_main/mqtt/state/MQTTAppState.dart';
 import 'package:provider/provider.dart';
 
