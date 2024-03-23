@@ -14,29 +14,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
 
-      - name: Install dependencies for phone_main
-        run: dart pub get
-        working-directory: phone_main
+      - name: Install dependencies and run tests for phone_main
+        run: |
+          cd phone_main
+          flutter pub get
+          flutter analyze
+          flutter test
 
-      - name: Analyze phone_main
-        run: dart analyze
-        working-directory: phone_main
-
-      - name: Run tests for phone_main
-        run: dart test
-        working-directory: phone_main
-
-      - name: Install dependencies for wear_mqtt
-        run: dart pub get
-        working-directory: wear_mqtt
-
-      - name: Analyze wear_mqtt
-        run: dart analyze
-        working-directory: wear_mqtt
-
-      - name: Run tests for wear_mqtt
-        run: dart test
-        working-directory: wear_mqtt
+      - name: Install dependencies and run tests for wear_mqtt
+        run: |
+          cd wear_mqtt
+          flutter pub get
+          flutter analyze
+          flutter test
