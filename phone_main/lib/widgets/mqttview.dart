@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phone_main/widgets/appbar.dart';
+import 'package:phone_main/widgets/columngame.dart';
 import 'package:phone_main/widgets/countdown.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
@@ -56,7 +57,7 @@ class _MQTTViewState extends State<MQTTView> {
             connectionStateText(_prepareStateMessageFrom(
                 currentAppState.getAppConnectionState)),
           mainColumn(),
-          // _buildScrollableTextWith(currentAppState.getHistoryText),
+          _buildScrollableTextWith(currentAppState.getHistoryText),
         ],
       ),
     );
@@ -105,14 +106,15 @@ class _MQTTViewState extends State<MQTTView> {
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
                         color: textColor),
-                    textAlign: TextAlign.center, 
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              SizedBox(height: 20),
+                SizedBox(height: 20),
               ],
             ),
           const SizedBox(height: 50),
-          _buildConnecteButtonFrom(currentAppState.getAppConnectionState)
+          _buildConnecteButtonFrom(currentAppState.getAppConnectionState),
+          // buildanother(currentAppState),
         ],
       ),
     );
@@ -128,10 +130,10 @@ class _MQTTViewState extends State<MQTTView> {
           yellowButton("Start", () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Animate(child: CountdownWidget())),
+              MaterialPageRoute(
+                  builder: (context) => Animate(child: CountdownWidget())),
             );
-          }
-          ),
+          }),
         if (isConnected) const SizedBox(height: 90),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -189,17 +191,33 @@ class _MQTTViewState extends State<MQTTView> {
   void _disconnect() {
     manager.disconnect();
   }
-  
-  // Widget _buildScrollableTextWith(String text) {
-  //   return Padding(
-  //     padding: const EdgeInsets.all(20.0),
-  //     child: SizedBox(
-  //       width: 400,
-  //       height: 200,
-  //       child: SingleChildScrollView(
-  //         child: Text(text),
-  //       ),
-  //     ),
+
+  Widget _buildScrollableTextWith(String text) {
+    return Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SizedBox(
+          width: 400,
+          height: 200,
+          child: SingleChildScrollView(
+            child: Text(
+              text,
+              style: const TextStyle(color: textColor),
+            ),
+          ),
+        ));
+  }
+
+  // Widget buildanother(MQTTAppState appState) {
+  //   return Consumer<MQTTAppState>(
+  //     builder: (context, appState, _) {
+  //       String latestMessage = appState.getReceivedText;
+  //       return Column(
+  //         children: [
+  //           columnGameState(context),
+  //           Text('Latest Message: $latestMessage'),
+  //         ],
+  //       );
+  //     },
   //   );
   // }
 }

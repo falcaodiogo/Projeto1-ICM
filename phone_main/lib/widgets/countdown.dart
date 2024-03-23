@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:phone_main/game.dart';
 import 'package:vibration/vibration.dart';
 
+// ignore: use_key_in_widget_constructors
 class CountdownWidget extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _CountdownWidgetState createState() => _CountdownWidgetState();
 }
 
@@ -33,7 +35,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
           Vibration.vibrate(pattern: [0, 90, 90, 90, 90, 90, 90, 90]);
           timer.cancel();
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => Page2()));
+              .push(MaterialPageRoute(builder: (context) => GamePage()));
         }
       });
     });

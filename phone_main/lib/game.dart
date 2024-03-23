@@ -3,7 +3,7 @@ import 'package:phone_main/widgets/appbar.dart';
 import 'package:phone_main/widgets/columngame.dart';
 
 // ignore: use_key_in_widget_constructors
-class Page2 extends StatelessWidget {
+class GamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -12,7 +12,7 @@ class Page2 extends StatelessWidget {
         child: Column(
           children: <Widget>[
             appBar(context),
-            columnGame(context),
+            columnGameState(context),
           ],
         ),
       ),

@@ -37,31 +37,36 @@ Widget playerWidget(BuildContext context, Color brightColor, Color darkColor) {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                RichText(
-                  text: const TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '56',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 55.0,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none,
-                          fontFamily: 'Roboto',
-                        ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '56',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 55.0,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.none,
+                              fontFamily: 'Roboto',
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' bpm',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.none,
+                              fontFamily: 'Roboto',
+                            ),
+                          ),
+                        ],
                       ),
-                      TextSpan(
-                        text: ' bpm',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none,
-                          fontFamily: 'Roboto',
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
