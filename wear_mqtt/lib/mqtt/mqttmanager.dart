@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:logger/logger.dart';
 
 // faz listen e dá publish de um topic
 class MQTTManager {
@@ -10,6 +11,8 @@ class MQTTManager {
   final String _identifier;
   final String _host;
   final String _topic;
+
+  var logger = Logger( printer: PrettyPrinter());
 
   MQTTManager(
       {required String host,
@@ -41,7 +44,7 @@ class MQTTManager {
         .startClean() // Non persistent session for testing
         .withWillQos(MqttQos.atLeastOnce);
     if (kDebugMode) {
-      print('EXAMPLE::Mosquitto client connecting....');
+      logger.d('EXAMPLE::Mosquitto client connecting....');
     }
     _client!.connectionMessage = connMess;
   }
@@ -50,13 +53,13 @@ class MQTTManager {
     assert(_client != null);
     try {
       if (kDebugMode) {
-        print('EXAMPLE::Mosquitto start client connecting....');
+        logger.d('EXAMPLE::Mosquitto start client connecting....');
       }
       _currentState.setAppConnectionState(MQTTAppConnectionState.connecting);
       await _client!.connect();
     } on Exception catch (e) {
       if (kDebugMode) {
-        print('EXAMPLE::client exception - $e');
+        logger.d('EXAMPLE::client exception - $e');
       }
       disconnect();
     }
@@ -64,7 +67,7 @@ class MQTTManager {
 
   void disconnect() {
     if (kDebugMode) {
-      print('Disconnected');
+      logger.d('Disconnected');
     }
     _client!.disconnect();
   }
@@ -78,19 +81,19 @@ class MQTTManager {
   /// The subscribed callback
   void onSubscribed(String topic) {
     if (kDebugMode) {
-      print('EXAMPLE::Subscription confirmed for topic $topic');
+      logger.d('EXAMPLE::Subscription confirmed for topic $topic');
     }
   }
 
   /// The unsolicited disconnect callback
   void onDisconnected() {
     if (kDebugMode) {
-      print('EXAMPLE::OnDisconnected client callback - Client disconnection');
+      logger.d('EXAMPLE::OnDisconnected client callback - Client disconnection');
     }
     if (_client!.connectionStatus!.returnCode ==
         MqttConnectReturnCode.noneSpecified) {
       if (kDebugMode) {
-        print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
+        logger.d('EXAMPLE::OnDisconnected callback is solicited, this is correct');
       }
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
@@ -100,7 +103,7 @@ class MQTTManager {
   void onConnected() {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
     if (kDebugMode) {
-      print('EXAMPLE::Mosquitto client connected....');
+      logger.d('EXAMPLE::Mosquitto client connected....');
     }
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
     _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
@@ -112,15 +115,15 @@ class MQTTManager {
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message!); // não mexer no !
       _currentState.setReceivedText(pt);
       if (kDebugMode) {
-        print(
+        logger.d(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       }
       if (kDebugMode) {
-        print('');
+        logger.d('');
       }
     });
     if (kDebugMode) {
-      print(
+      logger.d(
         'EXAMPLE::OnConnected client callback - Client connection was sucessful');
     }
   }

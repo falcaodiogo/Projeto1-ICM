@@ -6,8 +6,8 @@ import 'package:phone_main/widgets/columngame.dart';
 import 'package:phone_main/widgets/countdown.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
-import 'package:phone_main/mqtt/state/MQTTAppState.dart';
-import 'package:phone_main/mqtt/MQTTManager.dart';
+import 'package:phone_main/mqtt/state/mqttappstate.dart';
+import 'package:phone_main/mqtt/mqttmanager.dart';
 import 'package:uuid/uuid.dart';
 
 class MQTTView extends StatefulWidget {

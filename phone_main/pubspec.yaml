@@ -43,6 +43,7 @@ dependencies:
   flutter_animate: ^4.5.0
   vibration: ^1.8.4
   animated_background: ^2.0.0
+  logger: ^2.2.0
 
 dev_dependencies:
   flutter_test:

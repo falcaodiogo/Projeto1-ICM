@@ -89,7 +89,7 @@ class _MQTTViewState extends State<MQTTView> {
   }
 
   Widget _buildEditableColumn() {
-    // são os valores que segui do tutorial de mqtt 
+    // são os valores que segui do tutorial de mqtt
     _hostTextController.text = 'test.mosquitto.org';
     _topicTextController.text = 'flutter/amp/cool';
 
@@ -220,8 +220,8 @@ class _MQTTViewState extends State<MQTTView> {
     double heartRate = 0;
 
     const features = [
-    WorkoutFeature.heartRate,
-  ];
+      WorkoutFeature.heartRate,
+    ];
 
     workout.start(exerciseType: ExerciseType.walking, features: features);
 
