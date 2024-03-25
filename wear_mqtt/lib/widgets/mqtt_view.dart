@@ -7,6 +7,7 @@ import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
 import 'package:phone_main/mqtt/mqttmanager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:workout/workout.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MQTTView extends StatefulWidget {
   const MQTTView({super.key});
@@ -89,7 +90,8 @@ class _MQTTViewState extends State<MQTTView> {
     );
   }
 
-  Widget _buildEditableColumn(MQTTAppConnectionState state, BuildContext context) {
+  Widget _buildEditableColumn(
+      MQTTAppConnectionState state, BuildContext context) {
     // são os valores que segui do tutorial de mqtt
     _hostTextController.text = 'test.mosquitto.org';
     _topicTextController.text = 'flutter/amp/cool';
@@ -101,8 +103,28 @@ class _MQTTViewState extends State<MQTTView> {
         const SizedBox(
           height: 20,
         ),
-        if (isConnected)
-          yellowButton("Start", _startHeartbeat, context, 0),
+        if (isConnected) yellowButton("Start", _startHeartbeat, context, 0),
+        if (state == MQTTAppConnectionState.connecting)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              LoadingAnimationWidget.inkDrop(
+                size: 25,
+                color: Colors.white,
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  "Connecting...",
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: textColor),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         if (!isConnected)
           const Center(
             child: Text("Connection is non-\nexistent!",
@@ -184,8 +206,8 @@ class _MQTTViewState extends State<MQTTView> {
     double heartRate = 0;
 
     const features = [
-        WorkoutFeature.heartRate,
-      ];
+      WorkoutFeature.heartRate,
+    ];
 
     workout.start(exerciseType: ExerciseType.walking, features: features);
 

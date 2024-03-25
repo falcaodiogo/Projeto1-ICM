@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
-Widget playerWidget(BuildContext context, Color brightColor, Color darkColor) {
+Widget playerWidget(BuildContext context, Color brightColor, Color darkColor, String heartBeatValue) {
+
+  final Logger logger = Logger();
+  logger.d('PlayerWidget - heartBeatValue: $heartBeatValue');
+
   return Container(
     decoration: BoxDecoration(
       color: brightColor,
@@ -44,7 +49,7 @@ Widget playerWidget(BuildContext context, Color brightColor, Color darkColor) {
                       text: const TextSpan(
                         children: [
                           TextSpan(
-                            text: '56',
+                            text: "56",
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 55.0,

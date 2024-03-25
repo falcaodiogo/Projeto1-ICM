@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phone_main/endpage.dart';
 import 'package:phone_main/heartbeats.dart';
-import 'package:phone_main/widgets/mqtt_view.dart';
 
 Widget yellowButton(
     String text, Function onPressed, BuildContext context, int first) {

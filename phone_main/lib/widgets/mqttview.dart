@@ -2,13 +2,15 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phone_main/widgets/appbar.dart';
-import 'package:phone_main/widgets/columngame.dart';
+//import 'package:phone_main/widgets/columngame.dart';
 import 'package:phone_main/widgets/countdown.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:phone_main/mqtt/mqttmanager.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:uuid/uuid.dart';
+import 'package:logger/logger.dart';
 
 class MQTTView extends StatefulWidget {
   const MQTTView({super.key});
@@ -30,6 +32,7 @@ class _MQTTViewState extends State<MQTTView> {
   static const secondAccentColor = Color.fromARGB(255, 231, 224, 126);
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
+  static final Logger logger = Logger();
 
   @override
   void initState() {
@@ -82,7 +85,7 @@ class _MQTTViewState extends State<MQTTView> {
   Widget mainColumn() {
     _hostTextController.text = 'test.mosquitto.org';
     _topicTextController.text = 'flutter/amp/cool';
-
+    logger.d('MainColumn CONTEXT: $context');
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -112,6 +115,27 @@ class _MQTTViewState extends State<MQTTView> {
                 SizedBox(height: 20),
               ],
             ),
+          if (currentAppState.getAppConnectionState == MQTTAppConnectionState.connecting)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                LoadingAnimationWidget.inkDrop(
+                  color: Colors.white,
+                  size: 50,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    "Connecting...",
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                        color: textColor),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
+            ),
           const SizedBox(height: 50),
           _buildConnecteButtonFrom(currentAppState.getAppConnectionState),
           // buildanother(currentAppState),
@@ -123,7 +147,7 @@ class _MQTTViewState extends State<MQTTView> {
   Widget _buildConnecteButtonFrom(MQTTAppConnectionState state) {
     bool isConnected = state == MQTTAppConnectionState.connected;
     String connectionStatus = isConnected ? "Connected" : "Connect";
-
+    logger.d('BUILDCONNECTEDBUTTONFORM CONTEXT: $context');
     return Column(
       children: [
         if (isConnected)
