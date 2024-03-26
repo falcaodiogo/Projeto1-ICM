@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 
 // ignore: use_key_in_widget_constructors
 class CountdownWidget extends StatefulWidget {
+  const CountdownWidget({Key? key}) : super(key: key);
   @override
   // ignore: library_private_types_in_public_api
   _CountdownWidgetState createState() => _CountdownWidgetState();

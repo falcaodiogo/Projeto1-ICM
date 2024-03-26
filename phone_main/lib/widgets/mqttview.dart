@@ -147,7 +147,7 @@ class _MQTTViewState extends State<MQTTView> {
   Widget _buildConnecteButtonFrom(MQTTAppConnectionState state) {
     bool isConnected = state == MQTTAppConnectionState.connected;
     String connectionStatus = isConnected ? "Connected" : "Connect";
-    logger.d('BUILDCONNECTEDBUTTONFORM CONTEXT: $context');
+    logger.d('BUILD CONNECTED BUTTON FORM CONTEXT: $context');
     return Column(
       children: [
         if (isConnected)
@@ -155,7 +155,11 @@ class _MQTTViewState extends State<MQTTView> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => Animate(child: CountdownWidget())),
+                builder: ((context) => Provider<MQTTAppState>(
+                  create: (_) => MQTTAppState(),
+                  child: Animate(child: const CountdownWidget()),
+                ))
+              ),
             );
           }),
         if (isConnected) const SizedBox(height: 90),
