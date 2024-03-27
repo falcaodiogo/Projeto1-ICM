@@ -6,11 +6,13 @@ import 'package:phone_main/widgets/yellowbutton.dart';
 // ignore: use_key_in_widget_constructors
 class EndPage extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _EndPageState createState() => _EndPageState();
 }
 
 class _EndPageState extends State<EndPage> {
   static const textColor = Color.fromARGB(255, 224, 241, 255);
+  static const accentColor = Color.fromARGB(255, 255, 238, 0);
 
   bool blurEnabled = false;
 
@@ -44,19 +46,41 @@ class _EndPageState extends State<EndPage> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
             child: Container(
-              color: Colors.black.withOpacity(
-                  0), 
+              color: Colors.black.withOpacity(0),
             ),
           ),
         ),
         _buildAppBar(context),
-        SingleChildScrollView(
+        Center(
           child: Column(
-            children: <Widget>[
-              const SizedBox(height: 30),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 320,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Player 1\nwon!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 46,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.none,
+                        fontFamily: 'Roboto'),
+                  ),
+                ),
+              ),
               const SizedBox(height: kToolbarHeight),
-              Center(
-                child: yellowButton("Start again", () => {}, context, 2),
+              yellowButton(
+                "Start again",
+                () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
               ),
             ],
           ),
@@ -67,13 +91,14 @@ class _EndPageState extends State<EndPage> {
 
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       title: const Text(
-        'WearOS app',
+        'Phone app',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontWeight: FontWeight.w500,
           color: textColor,
-          fontSize: 15,
+          fontSize: 25,
         ),
       ),
       centerTitle: true,

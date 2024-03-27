@@ -74,11 +74,11 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "56",
-                              style: TextStyle(
+                              text: currentAppState.getHistoryText,
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 55.0,
                                 fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                                 fontFamily: 'Roboto',
                               ),
                             ),
-                            TextSpan(
+                            const TextSpan(
                               text: ' bpm',
                               style: TextStyle(
                                 color: Colors.black,
@@ -110,3 +110,16 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     );
   }
 }
+
+// Widget buildanother(MQTTAppState appState) {
+//     return Consumer<MQTTAppState>(
+//       builder: (context, appState, _) {
+//         String latestMessage = appState.getReceivedText;
+//         return Column(
+//           children: [
+//             Text('Latest Message: $latestMessage', style: TextStyle(fontSize: 10),),
+//           ],
+//         );
+//       },
+//     );
+//   }
