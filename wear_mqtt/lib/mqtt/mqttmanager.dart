@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
@@ -97,6 +99,7 @@ class MQTTManager {
       }
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
+    _currentState.removeDevice(_identifier);
   }
 
   /// The successful connect callback
@@ -105,15 +108,29 @@ class MQTTManager {
     if (kDebugMode) {
       logger.d('EXAMPLE::Mosquitto client connected....');
     }
+    _currentState.addDevice("$_identifier,smartwatch");
+    logger.d("Devices connected: ${_currentState.countDevices()}");
+    _publishDeviceInfo();
+    logger.d("SENT DEVICE INFO");
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
-    _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+    _client!.updates!.listen((List<MqttReceivedMessage>? c) {
       // ignore: avoid_as
       final MqttPublishMessage recMess = c![0].payload as MqttPublishMessage;
 
       // final MqttPublishMessage recMess = c![0].payload;
       final String pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message!); // não mexer no !
-      _currentState.setReceivedText(pt);
+      
+        
+        if (_currentState.countDevices() < 2) {
+          if (pt.contains("phone") && !_currentState.containsDevice(pt)) {
+            _currentState.addDevice(pt);
+            logger.d("Device added: $pt");
+            _publishDeviceInfo();
+            logger.d("SENT DEVICE INFO 111111111111");
+          }
+        }
+
       if (kDebugMode) {
         logger.d(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
@@ -127,4 +144,10 @@ class MQTTManager {
         'EXAMPLE::OnConnected client callback - Client connection was sucessful');
     }
   }
+
+  void _publishDeviceInfo() {
+    String message = '$_identifier,smartwatch';
+    publish(message);
+  }
+
 }

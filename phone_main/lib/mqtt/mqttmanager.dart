@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:mqtt_client/mqtt_client.dart';
-import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:logger/logger.dart';
 
 class MQTTManager {
@@ -86,12 +88,17 @@ class MQTTManager {
       logger.d('EXAMPLE::OnDisconnected callback is solicited, this is correct');
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
+    _currentState.removeDevice(_identifier);
   }
 
   /// The successful connect callback
   void onConnected() {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
     logger.d('EXAMPLE::Mosquitto client connected....');
+    _currentState.addDevice("$_identifier,phone");
+    logger.d("Devices connected: ${_currentState.countDevices()}");
+    _publishDeviceInfo();
+    logger.d("SENT DEVICE INFO");
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
     _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       // ignore: avoid_as
@@ -100,12 +107,31 @@ class MQTTManager {
       // final MqttPublishMessage recMess = c![0].payload;
       final String pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
-      _currentState.setReceivedText(pt);
+
+      if (_currentState.countDevices() < 2) {
+        logger.d("Entered IF statement");
+        if (pt.contains("smartwatch") && !_currentState.containsDevice(pt)) {
+          _currentState.addDevice(pt);
+          logger.d("Device added: $pt");
+          _publishDeviceInfo();
+          logger.d("SENT DEVICE INFO 111111111111");
+        }
+        
+      } else {
+        _currentState.setReceivedText(pt);
+      }
+
       logger.d(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       logger.d('');
     });
     logger.d(
         'EXAMPLE::OnConnected client callback - Client connection was sucessful');
+  }
+
+  // Publish info about the device like if it is a phone or a smartwatch
+  void _publishDeviceInfo() {
+    String message = '$_identifier,phone';
+    publish(message);
   }
 }

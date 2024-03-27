@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
 import 'package:phone_main/mqtt/mqttmanager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:logger/logger.dart';
 import 'package:workout/workout.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -30,6 +31,7 @@ class _MQTTViewState extends State<MQTTView> {
   static const secondAccentColor = Color.fromARGB(255, 231, 224, 126);
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
+  final Logger logger = Logger(printer: PrettyPrinter());
 
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _MQTTViewState extends State<MQTTView> {
   Widget build(BuildContext context) {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
     currentAppState = appState;
+    logger.d('Number of devices: ${currentAppState.countDevices()}');
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
