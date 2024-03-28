@@ -3,7 +3,10 @@ import 'package:phone_main/widgets/mqttview.dart';
 import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:provider/provider.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

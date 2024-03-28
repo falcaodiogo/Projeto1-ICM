@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:phone_main/heartbeats.dart';
 import 'package:phone_main/widgets/deviceconnected.dart';
@@ -262,8 +262,7 @@ class _MQTTViewState extends State<MQTTView> {
 
     const Duration heartbeatInterval = Duration(seconds: 4);
     Timer.periodic(heartbeatInterval, (timer) {
-      String heartbeatMessage =
-          'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate';
+      String heartbeatMessage = 'Heartbeat: $heartRate, deviceCount: ${currentAppState.countDevices()}';
       manager.publish(heartbeatMessage);
     });
   }

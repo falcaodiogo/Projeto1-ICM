@@ -6,9 +6,11 @@ import 'package:provider/provider.dart';
 class PlayerWidget extends StatefulWidget {
   final Color brightColor;
   final Color darkColor;
+  final String name;
+  final String heartrate;
 
   const PlayerWidget(
-      {super.key, required this.brightColor, required this.darkColor});
+      {super.key, required this.brightColor, required this.darkColor, required this.name, required this.heartrate});
 
   @override
   State<StatefulWidget> createState() {
@@ -43,12 +45,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       height: MediaQuery.of(context).size.height * 0.27,
       child: Stack(
         children: [
-          const Positioned(
+          Positioned(
             top: 20.0,
             left: 30.0,
             child: Text(
-              'Player 1',
-              style: TextStyle(
+              widget.name,
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 26.0,
                 fontWeight: FontWeight.bold,
@@ -77,7 +79,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: currentAppState.getHistoryText,
+                              text: widget.heartrate,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 55.0,
