@@ -67,6 +67,8 @@ class MQTTManager {
 
   void disconnect() {
 
+    _currentState.setGameStarted(false);
+
     _currentState.removeDevice(_identifier);
     _removeDeviceInfo();
 
@@ -133,6 +135,11 @@ class MQTTManager {
         logger.d("Received a remove message and removed device");
       }
 
+      if (pt.contains("start")) {
+        _currentState.setGameStarted(true);
+        logger.d("Received a start message");
+      }
+
       if (kDebugMode) {
         logger.d(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
@@ -154,5 +161,4 @@ class MQTTManager {
     String message = 'remove,$_identifier';
     publish(message);
   }
-
 }

@@ -157,16 +157,14 @@ class _MQTTViewState extends State<MQTTView> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              deviceConnected(deviceName: "phone", icon: Icons.phone_android_rounded, isConnected: true),
-              currentAppState.countWatches() == 0 ? 
-                deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded)
-              :
-                deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded, isConnected: true)
+              deviceConnected(deviceName: "phone", icon: Icons.phone_android_rounded, isConnected: currentAppState.countDevices() > 0),
+              deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded, isConnected: currentAppState.countWatches() > 0)
             ]
           ),
           
           if (currentAppState.countDevices() == _maxDevices)
             yellowButton("Start", () {
+              manager.startGame();
               Navigator.push(
                 context,
                 MaterialPageRoute(

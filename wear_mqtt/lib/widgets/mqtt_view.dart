@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:phone_main/heartbeats.dart';
 import 'package:phone_main/widgets/deviceconnected.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
@@ -98,10 +99,18 @@ class _MQTTViewState extends State<MQTTView> {
   Widget _buildEditableColumn(
       MQTTAppConnectionState state, BuildContext context) {
     // são os valores que segui do tutorial de mqtt
+    final MQTTAppState appState = Provider.of<MQTTAppState>(context);
+    currentAppState = appState;
+
     _hostTextController.text = 'test.mosquitto.org';
     _topicTextController.text = 'flutter/amp/cool';
 
     bool isConnected = state == MQTTAppConnectionState.connected;
+
+    if (currentAppState.getGameStarted) {
+      _startHeartbeat();
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => GamePage()));
+    }
 
     return Column(
       children: <Widget>[
@@ -111,15 +120,33 @@ class _MQTTViewState extends State<MQTTView> {
         if (isConnected && currentAppState.countDevices() < _maxDevices)
           Column(
             children: [
-              deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded, isConnected: true),
-              currentAppState.countPhones() == 0 ? 
-                  deviceConnected(deviceName: "phone", icon: Icons.phone)
-                :
-                  deviceConnected(deviceName: "smartwatch", icon: Icons.phone, isConnected: true)
+              deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded, isConnected: currentAppState.countDevices() > 0),
+              deviceConnected(deviceName: "phone", icon: Icons.phone, isConnected: currentAppState.countPhones() > 0)
             ],
           ),
             
-        if (isConnected && currentAppState.countDevices() == _maxDevices) yellowButton("Start", _startHeartbeat, context, 0),
+        if (isConnected && currentAppState.countDevices() == _maxDevices)
+          Center(
+            child: Column(
+              children: [
+                const Text(
+                  "Waiting for phone to start the game...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: textColor
+                  ),
+                ),
+                LoadingAnimationWidget.flickr(
+                  leftDotColor: accentColor, 
+                  rightDotColor: thirdAccentColor, 
+                  size: 40
+                ),
+              ],
+            ),
+          ),
+
         if (state == MQTTAppConnectionState.connecting)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -145,4 +145,9 @@ class MQTTManager {
     String message = 'remove,$_identifier';
     publish(message);
   }
+
+  void startGame() {
+    String message = 'start';
+    publish(message);
+  }
 }

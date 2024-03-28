@@ -5,6 +5,7 @@ class MQTTAppState with ChangeNotifier{
   MQTTAppConnectionState _appConnectionState = MQTTAppConnectionState.disconnected;
   String _receivedText = '';
   String _historyText = '';
+  bool _gameStarted = false;
   final List<Map<String, dynamic>> _connectedDevices = [];
 
   void setReceivedText(String text) {
@@ -17,8 +18,14 @@ class MQTTAppState with ChangeNotifier{
     notifyListeners();
   }
 
+  void setGameStarted(bool value) {
+    _gameStarted = value;
+    notifyListeners();
+  }
+
   String get getReceivedText => _receivedText;
   String get getHistoryText => _historyText;
+  bool get getGameStarted => _gameStarted;
   MQTTAppConnectionState get getAppConnectionState => _appConnectionState;
 
   void addDevice(String message) {
