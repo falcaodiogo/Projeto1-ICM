@@ -32,6 +32,7 @@ class MQTTAppState with ChangeNotifier{
   }
 
   void removeDevice(String deviceId) {
+    if (!_connectedDevices.any((element) => element['deviceId'] == deviceId)) return;
     _connectedDevices.removeWhere((element) => element['deviceId'] == deviceId);
     notifyListeners();
   }

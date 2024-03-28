@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phone_main/widgets/appbar.dart';
 //import 'package:phone_main/widgets/columngame.dart';
 import 'package:phone_main/widgets/countdown.dart';
+import 'package:phone_main/widgets/deviceconnected.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/mqttappstate.dart';
@@ -33,6 +34,7 @@ class _MQTTViewState extends State<MQTTView> {
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static final Logger logger = Logger();
+  final int _maxDevices = 2;
 
   @override
   void initState() {
@@ -61,7 +63,6 @@ class _MQTTViewState extends State<MQTTView> {
             connectionStateText(_prepareStateMessageFrom(
                 currentAppState.getAppConnectionState)),
           mainColumn(),
-          _buildScrollableTextWith(currentAppState.getHistoryText),
         ],
       ),
     );
@@ -152,17 +153,31 @@ class _MQTTViewState extends State<MQTTView> {
     return Column(
       children: [
         if (isConnected)
-          yellowButton("Start", () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: ((context) => Provider<MQTTAppState>(
-                  create: (_) => MQTTAppState(),
-                  child: Animate(child: const CountdownWidget()),
-                ))
-              ),
-            );
-          }),
+          if (currentAppState.countDevices() < _maxDevices)
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              deviceConnected(deviceName: "phone", icon: Icons.phone_android_rounded, isConnected: true),
+              currentAppState.countWatches() == 0 ? 
+                deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded)
+              :
+                deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded, isConnected: true)
+            ]
+          ),
+          
+          if (currentAppState.countDevices() == _maxDevices)
+            yellowButton("Start", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: ((context) => Provider<MQTTAppState>(
+                    create: (_) => MQTTAppState(),
+                    child: Animate(child: const CountdownWidget()),
+                  ))
+                ),
+              );
+            }),
+
         if (isConnected) const SizedBox(height: 90),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -222,20 +237,20 @@ class _MQTTViewState extends State<MQTTView> {
     manager.disconnect();
   }
 
-  Widget _buildScrollableTextWith(String text) {
-    return Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SizedBox(
-          width: 400,
-          height: 200,
-          child: SingleChildScrollView(
-            child: Text(
-              text,
-              style: const TextStyle(color: textColor),
-            ),
-          ),
-        ));
-  }
+  // Widget _buildScrollableTextWith(String text) {
+  //   return Padding(
+  //       padding: const EdgeInsets.all(20.0),
+  //       child: SizedBox(
+  //         width: 400,
+  //         height: 200,
+  //         child: SingleChildScrollView(
+  //           child: Text(
+  //             text,
+  //             style: const TextStyle(color: textColor),
+  //           ),
+  //         ),
+  //       ));
+  // }
 
   // Widget buildanother(MQTTAppState appState) {
   //   return Consumer<MQTTAppState>(

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:phone_main/mqtt/state/mqttappstate.dart';
@@ -65,8 +63,14 @@ class MQTTManager {
   }
 
   void disconnect() {
-    logger.d('Disconnected');
-    _client!.disconnect();
+
+    _currentState.removeDevice(_identifier);
+    _removeDeviceInfo();
+
+    Future.delayed(const Duration(seconds: 2), () {
+      logger.d('Disconnected');
+      _client!.disconnect(); 
+    });
   }
 
   void publish(String message) {
@@ -88,7 +92,6 @@ class MQTTManager {
       logger.d('EXAMPLE::OnDisconnected callback is solicited, this is correct');
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
-    _currentState.removeDevice(_identifier);
   }
 
   /// The successful connect callback
@@ -96,9 +99,9 @@ class MQTTManager {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
     logger.d('EXAMPLE::Mosquitto client connected....');
     _currentState.addDevice("$_identifier,phone");
-    logger.d("Devices connected: ${_currentState.countDevices()}");
+
     _publishDeviceInfo();
-    logger.d("SENT DEVICE INFO");
+
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
     _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       // ignore: avoid_as
@@ -108,16 +111,19 @@ class MQTTManager {
       final String pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
 
-      if (_currentState.countDevices() < 2) {
-        logger.d("Entered IF statement");
-        if (pt.contains("smartwatch") && !_currentState.containsDevice(pt)) {
-          _currentState.addDevice(pt);
-          logger.d("Device added: $pt");
-          _publishDeviceInfo();
-          logger.d("SENT DEVICE INFO 111111111111");
-        }
-        
-      } else {
+      if (_currentState.countDevices() < 2 && pt.contains("smartwatch")) {
+        _currentState.addDevice(pt);
+        _publishDeviceInfo();
+        logger.d("Received a new message and added device");
+      }
+
+      if (pt.contains("remove")) {
+        _currentState.removeDevice(pt.split(",")[1]);
+        logger.d("Received a remove message and removed device");
+
+      } 
+      
+      else {
         _currentState.setReceivedText(pt);
       }
 
@@ -132,6 +138,11 @@ class MQTTManager {
   // Publish info about the device like if it is a phone or a smartwatch
   void _publishDeviceInfo() {
     String message = '$_identifier,phone';
+    publish(message);
+  }
+
+  void _removeDeviceInfo() {
+    String message = 'remove,$_identifier';
     publish(message);
   }
 }

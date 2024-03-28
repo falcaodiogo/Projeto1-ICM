@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
@@ -68,10 +66,14 @@ class MQTTManager {
   }
 
   void disconnect() {
-    if (kDebugMode) {
-      logger.d('Disconnected');
-    }
-    _client!.disconnect();
+
+    _currentState.removeDevice(_identifier);
+    _removeDeviceInfo();
+
+    Future.delayed(const Duration(seconds: 2), () {
+      _client!.disconnect();
+      logger.d('EXAMPLE::Disconnected');
+    });
   }
 
   void publish(String message) {
@@ -89,9 +91,7 @@ class MQTTManager {
 
   /// The unsolicited disconnect callback
   void onDisconnected() {
-    if (kDebugMode) {
-      logger.d('EXAMPLE::OnDisconnected client callback - Client disconnection');
-    }
+    logger.d('EXAMPLE::OnDisconnected client callback - Client disconnection');
     if (_client!.connectionStatus!.returnCode ==
         MqttConnectReturnCode.noneSpecified) {
       if (kDebugMode) {
@@ -99,7 +99,6 @@ class MQTTManager {
       }
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
-    _currentState.removeDevice(_identifier);
   }
 
   /// The successful connect callback
@@ -109,11 +108,11 @@ class MQTTManager {
       logger.d('EXAMPLE::Mosquitto client connected....');
     }
     _currentState.addDevice("$_identifier,smartwatch");
-    logger.d("Devices connected: ${_currentState.countDevices()}");
+
     _publishDeviceInfo();
-    logger.d("SENT DEVICE INFO");
+
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
-    _client!.updates!.listen((List<MqttReceivedMessage>? c) {
+    _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       // ignore: avoid_as
       final MqttPublishMessage recMess = c![0].payload as MqttPublishMessage;
 
@@ -122,20 +121,21 @@ class MQTTManager {
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message!); // não mexer no !
       
         
-        if (_currentState.countDevices() < 2) {
-          if (pt.contains("phone") && !_currentState.containsDevice(pt)) {
-            _currentState.addDevice(pt);
-            logger.d("Device added: $pt");
-            _publishDeviceInfo();
-            logger.d("SENT DEVICE INFO 111111111111");
-          }
+      if (_currentState.countDevices() < 2) {
+        if (pt.contains("phone") && !_currentState.containsDevice(pt)) {
+          _currentState.addDevice(pt);
+          _publishDeviceInfo();
         }
+      }
+
+      if (pt.contains("remove")) {
+        _currentState.removeDevice(pt.split(',')[1]);
+        logger.d("Received a remove message and removed device");
+      }
 
       if (kDebugMode) {
         logger.d(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
-      }
-      if (kDebugMode) {
         logger.d('');
       }
     });
@@ -147,6 +147,11 @@ class MQTTManager {
 
   void _publishDeviceInfo() {
     String message = '$_identifier,smartwatch';
+    publish(message);
+  }
+
+  void _removeDeviceInfo() {
+    String message = 'remove,$_identifier';
     publish(message);
   }
 
