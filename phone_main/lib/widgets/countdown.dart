@@ -1,15 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:phone_main/database/isar_service.dart';
 import 'package:phone_main/game.dart';
 import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:vibration/vibration.dart';
 import 'package:logger/logger.dart';
 
 class CountdownWidget extends StatefulWidget {
-  final IsarService isarService; // Add this line
 
-  const CountdownWidget({Key? key, required this.isarService}) : super(key: key); // Modify constructor
+  const CountdownWidget({Key? key}) : super(key: key); // Modify constructor
 
   @override
   _CountdownWidgetState createState() => _CountdownWidgetState();
@@ -44,7 +42,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
           Vibration.vibrate(pattern: [0, 90, 90, 90, 90, 90, 90, 90]);
           timer.cancel();
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => GamePage(isarService: widget.isarService))); // Access isarService from widget
+              .push(MaterialPageRoute(builder: (context) => GamePage())); // Access isarService from widget
         }
       });
     });
@@ -58,6 +56,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
 
   @override
   Widget build(BuildContext context) {
+    logger.d("Context FROM COUNTDOWNWIDGET BUILD is $context");
     return SizedBox(
       child: Container(
         color: const Color.fromARGB(255, 19, 35, 44),

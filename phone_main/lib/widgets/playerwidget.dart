@@ -7,10 +7,12 @@ class PlayerWidget extends StatefulWidget {
   final Color brightColor;
   final Color darkColor;
   final String name;
-  final String heartrate;
 
   const PlayerWidget(
-      {super.key, required this.brightColor, required this.darkColor, required this.name, required this.heartrate});
+      {super.key,
+      required this.brightColor,
+      required this.darkColor,
+      required this.name});
 
   @override
   State<StatefulWidget> createState() {
@@ -19,7 +21,6 @@ class PlayerWidget extends StatefulWidget {
 }
 
 class _PlayerWidgetState extends State<PlayerWidget> {
-  late MQTTAppState currentAppState;
   final Logger logger = Logger();
 
   @override
@@ -29,99 +30,85 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    
-    final MQTTAppState appState = Provider.of<MQTTAppState>(context);
-    currentAppState = appState;
 
-    logger.d("Context FROM PLAYERWIDGET is $context");
-    logger.d("Current App State is $currentAppState");
-
-    return Container(
-      decoration: BoxDecoration(
-        color: widget.brightColor,
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      width: MediaQuery.of(context).size.width * 0.85,
-      height: MediaQuery.of(context).size.height * 0.27,
-      child: Stack(
-        children: [
-          Positioned(
-            top: 20.0,
-            left: 30.0,
-            child: Text(
-              widget.name,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 26.0,
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.none,
-                fontFamily: 'Roboto',
+    return Consumer<MQTTAppState>(builder: (context, currentAppState, child) {
+      logger.i('PlayerWidget: Context $context');
+      logger.i('PlayerWidget: currentAppState $currentAppState');
+      logger.i('heart beat value ${currentAppState.getReceivedText}');
+      return Container(
+        decoration: BoxDecoration(
+          color: widget.brightColor,
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        width: MediaQuery.of(context).size.width * 0.85,
+        height: MediaQuery.of(context).size.height * 0.27,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 20.0,
+              left: 30.0,
+              child: Text(
+                widget.name,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 26.0,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.none,
+                  fontFamily: 'Roboto',
+                ),
               ),
             ),
-          ),
-          Positioned(
-            top: 67.0,
-            left: 27.0,
-            right: 27.0,
-            bottom: 27.0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: widget.darkColor,
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: widget.heartrate,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 55.0,
-                                fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.none,
-                                fontFamily: 'Roboto',
+            Positioned(
+              top: 67.0,
+              left: 27.0,
+              right: 27.0,
+              bottom: 27.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: widget.darkColor,
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text:'0.0',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 55.0,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.none,
+                                  fontFamily: 'Roboto',
+                                ),
                               ),
-                            ),
-                            const TextSpan(
-                              text: ' bpm',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 25.0,
-                                fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.none,
-                                fontFamily: 'Roboto',
+                              TextSpan(
+                                text: ' bpm',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 25.0,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.none,
+                                  fontFamily: 'Roboto',
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
-      ),
-    );
+            )
+          ],
+        ),
+      );
+    });
   }
 }
-
-// Widget buildanother(MQTTAppState appState) {
-//     return Consumer<MQTTAppState>(
-//       builder: (context, appState, _) {
-//         String latestMessage = appState.getReceivedText;
-//         return Column(
-//           children: [
-//             Text('Latest Message: $latestMessage', style: TextStyle(fontSize: 10),),
-//           ],
-//         );
-//       },
-//     );
-//   }

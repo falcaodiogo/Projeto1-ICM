@@ -31,7 +31,7 @@ class IsarService {
   }
 
   // Update an existing user in the Isar database.
-  Future<void> UpdateUser(User user) async {
+  Future<void> updateUser(User user) async {
     final isar = await db;
     await isar.writeTxn(() async {
       //Perform a write transaction to update the user in the database.

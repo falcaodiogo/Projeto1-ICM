@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:phone_main/heartbeats.dart';
 import 'package:phone_main/widgets/deviceconnected.dart';
-import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
 import 'package:phone_main/mqtt/mqttmanager.dart';
@@ -34,7 +33,8 @@ class _MQTTViewState extends State<MQTTView> {
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   final Logger logger = Logger(printer: PrettyPrinter());
-  final int _maxDevices = 2;
+  final int _maxDevices = 2; // Change here the number of devices
+  final String _uniqueClientId = (Platform.isAndroid ? 'Android_' : 'iOS_') + const Uuid().v4();
 
   @override
   void initState() {
@@ -233,13 +233,11 @@ class _MQTTViewState extends State<MQTTView> {
   }
 
   void _configureAndConnect() {
-    String osPrefix = Platform.isAndroid ? 'Android_' : 'iOS_';
-    String uniqueClientId = osPrefix + const Uuid().v4();
 
     manager = MQTTManager(
         host: _hostTextController.text,
         topic: _topicTextController.text,
-        identifier: uniqueClientId,
+        identifier: _uniqueClientId,
         state: currentAppState);
     manager.initializeMQTTClient();
     manager.connect();
@@ -262,8 +260,8 @@ class _MQTTViewState extends State<MQTTView> {
 
     const Duration heartbeatInterval = Duration(seconds: 4);
     Timer.periodic(heartbeatInterval, (timer) {
-      String heartbeatMessage = 'Heartbeat: $heartRate, deviceCount: ${currentAppState.countDevices()}';
-      manager.publish(heartbeatMessage);
+      String heartbeatMessage = '$heartRate';
+      manager.publish(heartbeatMessage,'heartbeat/$_uniqueClientId');
     });
   }
 
