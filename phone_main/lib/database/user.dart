@@ -3,8 +3,8 @@ part 'user.g.dart';
 
 @collection
 class User {
-  User(this.id, this.name, this.heartRate);
+  User(this.id, this.name, this.heartrate);
   Id? id;
   String? name;
-  double? heartRate;
+  List<double>? heartrate;
 }

@@ -23,6 +23,21 @@ class IsarService {
     yield* isar.users.where().watch(fireImmediately: true);
   }
 
+  // get user by id
+  Future<User?> getUserById(int id) async {
+    final isar = await db;
+    //Find the user with the specified ID in the user collection and return it.
+    return await isar.users.get(id);
+  }
+
+  // add heart rate to user(add to heartrate list of user)
+  Future<void> addHeartRate(User user, double heartRate) async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      await isar.users.put(user..heartrate?.add(heartRate));
+    });
+  }
+
   //Retrieve all users from the Isar database.
   Future<List<User>> getAllUser() async {
     final isar = await db;
@@ -31,7 +46,8 @@ class IsarService {
   }
 
   // Update an existing user in the Isar database.
-  Future<void> updateUser(User user) async {
+  // ignore: non_constant_identifier_names
+  Future<void> UpdateUser(User user) async {
     final isar = await db;
     await isar.writeTxn(() async {
       //Perform a write transaction to update the user in the database.
@@ -45,27 +61,6 @@ class IsarService {
     //Perform a write transaction to delete the user with the specified ID.
     isar.writeTxn(() => isar.users.delete(userid));
   }
-
-  // delete all
-  Future<void> deleteAll() async {
-    final isar = await db;
-    // list 1 to 100
-    List<int> list = List.generate(100, (index) => index + 1);
-    //Perform a write transaction to delete all users from the database.
-    isar.writeTxn(() => isar.users.deleteAll(list));
-  }
-
-  // //Filter users based on name containing "test" and age equal to 45. It can be (should be) modified as dynamic.
-  // Future<User?> filterName() async {
-  //   final isar = await db;
-  //   //Use the Isar query API to filter users based on specific criteria and return the first matching result.
-  //   final favorites = await isar.users
-  //       .filter()
-  //       .nameContains("test")
-  //       .ageEqualTo(45)
-  //       .findFirst();
-  //   return favorites;
-  // }
 
   Future<Isar> openDB() async {
     var dir = await getApplicationDocumentsDirectory();

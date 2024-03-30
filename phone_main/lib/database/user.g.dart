@@ -17,10 +17,10 @@ const UserSchema = CollectionSchema(
   name: r'User',
   id: -7838171048429979076,
   properties: {
-    r'heartRate': PropertySchema(
+    r'heartrate': PropertySchema(
       id: 0,
-      name: r'heartRate',
-      type: IsarType.double,
+      name: r'heartrate',
+      type: IsarType.doubleList,
     ),
     r'name': PropertySchema(
       id: 1,
@@ -49,6 +49,12 @@ int _userEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
+    final value = object.heartrate;
+    if (value != null) {
+      bytesCount += 3 + value.length * 8;
+    }
+  }
+  {
     final value = object.name;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -63,7 +69,7 @@ void _userSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDouble(offsets[0], object.heartRate);
+  writer.writeDoubleList(offsets[0], object.heartrate);
   writer.writeString(offsets[1], object.name);
 }
 
@@ -76,7 +82,7 @@ User _userDeserialize(
   final object = User(
     id,
     reader.readStringOrNull(offsets[1]),
-    reader.readDoubleOrNull(offsets[0]),
+    reader.readDoubleList(offsets[0]),
   );
   return object;
 }
@@ -89,7 +95,7 @@ P _userDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readDoubleList(offset)) as P;
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     default:
@@ -185,81 +191,165 @@ extension UserQueryWhere on QueryBuilder<User, User, QWhereClause> {
 }
 
 extension UserQueryFilter on QueryBuilder<User, User, QFilterCondition> {
-  QueryBuilder<User, User, QAfterFilterCondition> heartRateIsNull() {
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'heartRate',
+        property: r'heartrate',
       ));
     });
   }
 
-  QueryBuilder<User, User, QAfterFilterCondition> heartRateIsNotNull() {
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'heartRate',
+        property: r'heartrate',
       ));
     });
   }
 
-  QueryBuilder<User, User, QAfterFilterCondition> heartRateEqualTo(
-    double? value, {
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateElementEqualTo(
+    double value, {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'heartRate',
+        property: r'heartrate',
         value: value,
         epsilon: epsilon,
       ));
     });
   }
 
-  QueryBuilder<User, User, QAfterFilterCondition> heartRateGreaterThan(
-    double? value, {
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateElementGreaterThan(
+    double value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'heartRate',
+        property: r'heartrate',
         value: value,
         epsilon: epsilon,
       ));
     });
   }
 
-  QueryBuilder<User, User, QAfterFilterCondition> heartRateLessThan(
-    double? value, {
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateElementLessThan(
+    double value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'heartRate',
+        property: r'heartrate',
         value: value,
         epsilon: epsilon,
       ));
     });
   }
 
-  QueryBuilder<User, User, QAfterFilterCondition> heartRateBetween(
-    double? lower,
-    double? upper, {
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateElementBetween(
+    double lower,
+    double upper, {
     bool includeLower = true,
     bool includeUpper = true,
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'heartRate',
+        property: r'heartrate',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
         epsilon: epsilon,
       ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'heartrate',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'heartrate',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'heartrate',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'heartrate',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'heartrate',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> heartrateLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'heartrate',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -481,18 +571,6 @@ extension UserQueryObject on QueryBuilder<User, User, QFilterCondition> {}
 extension UserQueryLinks on QueryBuilder<User, User, QFilterCondition> {}
 
 extension UserQuerySortBy on QueryBuilder<User, User, QSortBy> {
-  QueryBuilder<User, User, QAfterSortBy> sortByHeartRate() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'heartRate', Sort.asc);
-    });
-  }
-
-  QueryBuilder<User, User, QAfterSortBy> sortByHeartRateDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'heartRate', Sort.desc);
-    });
-  }
-
   QueryBuilder<User, User, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -507,18 +585,6 @@ extension UserQuerySortBy on QueryBuilder<User, User, QSortBy> {
 }
 
 extension UserQuerySortThenBy on QueryBuilder<User, User, QSortThenBy> {
-  QueryBuilder<User, User, QAfterSortBy> thenByHeartRate() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'heartRate', Sort.asc);
-    });
-  }
-
-  QueryBuilder<User, User, QAfterSortBy> thenByHeartRateDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'heartRate', Sort.desc);
-    });
-  }
-
   QueryBuilder<User, User, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -545,9 +611,9 @@ extension UserQuerySortThenBy on QueryBuilder<User, User, QSortThenBy> {
 }
 
 extension UserQueryWhereDistinct on QueryBuilder<User, User, QDistinct> {
-  QueryBuilder<User, User, QDistinct> distinctByHeartRate() {
+  QueryBuilder<User, User, QDistinct> distinctByHeartrate() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'heartRate');
+      return query.addDistinctBy(r'heartrate');
     });
   }
 
@@ -566,9 +632,9 @@ extension UserQueryProperty on QueryBuilder<User, User, QQueryProperty> {
     });
   }
 
-  QueryBuilder<User, double?, QQueryOperations> heartRateProperty() {
+  QueryBuilder<User, List<double>?, QQueryOperations> heartrateProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'heartRate');
+      return query.addPropertyName(r'heartrate');
     });
   }
 
