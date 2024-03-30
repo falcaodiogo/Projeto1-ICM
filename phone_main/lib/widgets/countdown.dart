@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/game.dart';
 import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:vibration/vibration.dart';
 import 'package:logger/logger.dart';
 
-// ignore: use_key_in_widget_constructors
 class CountdownWidget extends StatefulWidget {
-  const CountdownWidget({Key? key}) : super(key: key);
+  final IsarService isarService;
+
+  const CountdownWidget({Key? key, required this.isarService}) : super(key: key);
+
   @override
   // ignore: library_private_types_in_public_api
   _CountdownWidgetState createState() => _CountdownWidgetState();
@@ -44,7 +47,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
           Vibration.vibrate(pattern: [0, 90, 90, 90, 90, 90, 90, 90]);
           timer.cancel();
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => GamePage()));
+              .push(MaterialPageRoute(builder: (context) => GamePage(isarService: widget.isarService)));
         }
       });
     });

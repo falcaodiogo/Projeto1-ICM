@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/widgets/playerwidget.dart';
 import 'package:phone_main/widgets/timerwidget.dart';
 import 'package:phone_main/winner.dart';
 
-Widget columnGameState(BuildContext context) {
+Widget columnGameState(BuildContext context, IsarService isarService) {
   void goToPage4() {
     Navigator.push(
       context,
@@ -16,17 +17,43 @@ Widget columnGameState(BuildContext context) {
       children: <Widget>[
         const SizedBox(height: 20),
         TimerWidget(
-          onTimerEnd: goToPage4, // Pass callback function
+          onTimerEnd: goToPage4,
         ),
         const SizedBox(height: 35),
-        const PlayerWidget(
-          brightColor: Color.fromARGB(255, 195, 205, 132),
-          darkColor: Color.fromARGB(255, 169, 177, 117),
+        FutureBuilder<String>(
+          future: isarService.getUserName(1),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Placeholder for loading
+            }
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            return PlayerWidget(
+              brightColor: const Color.fromARGB(255, 195, 205, 132),
+              darkColor: const Color.fromARGB(255, 169, 177, 117), 
+              name: snapshot.data ?? "", // Use snapshot.data to get the result
+              heartrate: "", // Replace with actual value if needed
+            );
+          },
         ),
         const SizedBox(height: 35),
-        const PlayerWidget(
-          brightColor: Color.fromARGB(255, 204, 154, 99),
-          darkColor: Color.fromARGB(255, 164, 127, 84),
+        FutureBuilder<double>(
+          future: isarService.getLastHeartRate(1),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Placeholder for loading
+            }
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            return PlayerWidget(
+              brightColor: const Color.fromARGB(255, 204, 154, 99),
+              darkColor: const Color.fromARGB(255, 164, 127, 84), 
+              name: "", // Replace with actual value if needed
+              heartrate: snapshot.data?.toString() ?? "", // Use snapshot.data to get the result
+            );
+          },
         ),
         const SizedBox(height: 35),
         // go to first page

@@ -30,6 +30,28 @@ class IsarService {
     return await isar.users.get(id);
   }
 
+  // get list of heartrate of user
+  Future<List<double>> getHeartRateList(User user) async {
+    // ignore: unused_local_variable
+    final isar = await db;
+    //Find the user with the specified ID in the user collection and return it.
+    return user.heartrate ?? [];
+  }
+
+  // get last heartrate of user
+  Future<double> getLastHeartRate(int id) async {
+    final isar = await db;
+    //Find the user with the specified ID in the user collection and return the last heart rate.
+    return (await isar.users.get(id))?.heartrate?.last ?? 0;
+  }
+
+  // get name of user by id
+  Future<String> getUserName(int id) async {
+    final isar = await db;
+    //Find the user with the specified ID in the user collection and return the name.
+    return (await isar.users.get(id))?.name ?? '';
+  }
+
   // add heart rate to user(add to heartrate list of user)
   Future<void> addHeartRate(User user, double heartRate) async {
     final isar = await db;

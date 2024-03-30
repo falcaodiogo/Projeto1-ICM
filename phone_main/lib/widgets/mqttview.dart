@@ -1,6 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:phone_main/database/user.dart';
+import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/widgets/appbar.dart';
 //import 'package:phone_main/widgets/columngame.dart';
 import 'package:phone_main/widgets/countdown.dart';
@@ -28,6 +30,7 @@ class _MQTTViewState extends State<MQTTView> {
   final TextEditingController _topicTextController = TextEditingController();
   late MQTTAppState currentAppState;
   late MQTTManager manager;
+  IsarService isarService = IsarService();
   static const backgroundColor = Color.fromARGB(255, 19, 35, 44);
   static const accentColor = Color.fromARGB(255, 255, 238, 0);
   static const secondAccentColor = Color.fromARGB(255, 231, 224, 126);
@@ -35,9 +38,13 @@ class _MQTTViewState extends State<MQTTView> {
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static final Logger logger = Logger();
   final int _maxDevices = 2;
+  User user1 = User(1, "name1", []);
+  // User user2 = User(2, "name2", []);
 
   @override
   void initState() {
+    isarService.saveUser(user1);
+    // isarService.saveUser(user2);
     super.initState();
   }
 
@@ -53,6 +60,13 @@ class _MQTTViewState extends State<MQTTView> {
   Widget build(BuildContext context) {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
     currentAppState = appState;
+
+    // update heartrate (message = 'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate')
+    double heartRate = currentAppState.getReceivedText.contains('Heart Rate') ? double.parse(currentAppState.getReceivedText.split('Heart Rate: ')[1]) : 0;
+    
+    isarService.addHeartRate(user1, heartRate);
+
+    // continue
     logger.d('Number of devices: ${currentAppState.countDevices()}');
     return SingleChildScrollView(
       child: Column(
@@ -63,7 +77,7 @@ class _MQTTViewState extends State<MQTTView> {
             connectionStateText(_prepareStateMessageFrom(
                 currentAppState.getAppConnectionState)),
           mainColumn(),
-          _buildScrollableTextWith(currentAppState.getHistoryText)
+          _buildScrollableTextWith(currentAppState.getReceivedText),
         ],
       ),
     );
@@ -171,7 +185,7 @@ class _MQTTViewState extends State<MQTTView> {
                 MaterialPageRoute(
                   builder: ((context) => Provider<MQTTAppState>(
                     create: (_) => MQTTAppState(),
-                    child: Animate(child: const CountdownWidget()),
+                    child: Animate(child: CountdownWidget(isarService: isarService,)),
                   ))
                 ),
               );
