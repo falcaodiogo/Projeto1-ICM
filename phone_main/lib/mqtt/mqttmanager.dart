@@ -5,7 +5,6 @@ import 'package:logger/logger.dart';
 
 class MQTTManager {
   // Private instance of client
-  static MQTTManager? _instance;
   final MQTTAppState _currentState;
   MqttServerClient? _client;
   final String _identifier;
@@ -14,32 +13,17 @@ class MQTTManager {
 
   var logger = Logger(printer: PrettyPrinter());
 
-  MQTTManager._internal({
-    required String host,
-    required String topic,
-    required String identifier,
-    required MQTTAppState state,
-  })  : _identifier = identifier,
-        _host = host,
-        _topic = topic,
-        _currentState = state;
-
   // Constructor
   // ignore: sort_constructors_first
-  factory MQTTManager(
+  MQTTManager(
       {required String host,
       required String topic,
       required String identifier,
-      required MQTTAppState state
-  }) {
-    _instance ??= MQTTManager._internal(
-      host: host,
-      identifier: identifier,
-      topic: topic,
-      state: state,
-    );
-    return _instance!;
-  }
+      required MQTTAppState state})
+      : _identifier = identifier,
+        _host = host,
+        _topic = topic,
+        _currentState = state;
 
   void initializeMQTTClient() {
     _client = MqttServerClient(_host, _identifier);
@@ -79,12 +63,13 @@ class MQTTManager {
   }
 
   void disconnect() {
+
     _currentState.removeDevice(_identifier);
     _removeDeviceInfo();
 
     Future.delayed(const Duration(seconds: 2), () {
       logger.d('Disconnected');
-      _client!.disconnect();
+      _client!.disconnect(); 
     });
   }
 
@@ -104,8 +89,7 @@ class MQTTManager {
     logger.d('EXAMPLE::OnDisconnected client callback - Client disconnection');
     if (_client!.connectionStatus!.returnCode ==
         MqttConnectReturnCode.noneSpecified) {
-      logger
-          .d('EXAMPLE::OnDisconnected callback is solicited, this is correct');
+      logger.d('EXAMPLE::OnDisconnected callback is solicited, this is correct');
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
   }
@@ -119,8 +103,6 @@ class MQTTManager {
     _publishDeviceInfo();
 
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
-    _client!.subscribe('heartbeat/+', MqttQos.atLeastOnce);
-
     _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       // ignore: avoid_as
       final MqttPublishMessage recMess = c![0].payload as MqttPublishMessage;
@@ -138,18 +120,12 @@ class MQTTManager {
       if (pt.contains("remove")) {
         _currentState.removeDevice(pt.split(",")[1]);
         logger.d("Received a remove message and removed device");
-      } else {
-        _currentState.setReceivedText(pt);
-      }
 
-
-      if (c[0].topic.contains('heartbeat')) {
-        logger.d('Notification:: topic is <${c[0].topic}>');
-        logger.d('Notification:: heartbeat value is $pt');
-        _currentState.setReceivedText(pt);
-        logger.d('Heartbeat:: ${_currentState.getReceivedText}');
-      }
+      } 
       
+      else {
+        _currentState.setReceivedText(pt);
+      }
 
       logger.d(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
@@ -159,6 +135,7 @@ class MQTTManager {
         'EXAMPLE::OnConnected client callback - Client connection was sucessful');
   }
 
+  // Publish info about the device like if it is a phone or a smartwatch
   void _publishDeviceInfo() {
     String message = '$_identifier,phone';
     publish(message);

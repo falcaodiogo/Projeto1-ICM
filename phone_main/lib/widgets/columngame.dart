@@ -4,7 +4,6 @@ import 'package:phone_main/widgets/timerwidget.dart';
 import 'package:phone_main/winner.dart';
 
 Widget columnGameState(BuildContext context) {
-
   void goToPage4() {
     Navigator.push(
       context,
@@ -17,20 +16,17 @@ Widget columnGameState(BuildContext context) {
       children: <Widget>[
         const SizedBox(height: 20),
         TimerWidget(
-          onTimerEnd: goToPage4,
+          onTimerEnd: goToPage4, // Pass callback function
         ),
         const SizedBox(height: 35),
         const PlayerWidget(
           brightColor: Color.fromARGB(255, 195, 205, 132),
           darkColor: Color.fromARGB(255, 169, 177, 117),
-          name: "Player 1",
         ),
-
         const SizedBox(height: 35),
         const PlayerWidget(
           brightColor: Color.fromARGB(255, 204, 154, 99),
           darkColor: Color.fromARGB(255, 164, 127, 84),
-          name: '',
         ),
         const SizedBox(height: 35),
         // go to first page

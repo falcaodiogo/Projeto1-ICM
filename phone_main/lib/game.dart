@@ -8,11 +8,9 @@ import 'package:provider/provider.dart';
 // ignore: use_key_in_widget_constructors
 class GamePage extends StatelessWidget {
   final Logger logger = Logger();
-
-  GamePage({super.key}); 
-
   @override
   Widget build(BuildContext context) {
+    logger.d("Context FROM GAMEPAGE is $context");
     return ChangeNotifierProvider(
       create: (context) => MQTTAppState(),
       child: Container(
@@ -21,7 +19,7 @@ class GamePage extends StatelessWidget {
           child: Column(
             children: <Widget>[
               appBar(context),
-              columnGameState(context), 
+              columnGameState(context),
             ],
           ),
         ),

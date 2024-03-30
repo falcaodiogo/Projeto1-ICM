@@ -78,10 +78,10 @@ class MQTTManager {
     });
   }
 
-  void publish(String message, String topic) {
+  void publish(String message) {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addString(message);
-    _client!.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
+    _client!.publishMessage(_topic, MqttQos.exactlyOnce, builder.payload!);
   }
 
   /// The subscribed callback
@@ -114,8 +114,6 @@ class MQTTManager {
     _publishDeviceInfo();
 
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
-    _client!.subscribe('heartbeat/$_identifier', MqttQos.atLeastOnce);
-
     _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       // ignore: avoid_as
       final MqttPublishMessage recMess = c![0].payload as MqttPublishMessage;
@@ -156,11 +154,11 @@ class MQTTManager {
 
   void _publishDeviceInfo() {
     String message = '$_identifier,smartwatch';
-    publish(message, _topic);
+    publish(message);
   }
 
   void _removeDeviceInfo() {
     String message = 'remove,$_identifier';
-    publish(message, _topic);
+    publish(message);
   }
 }

@@ -39,10 +39,7 @@ class GamePage extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            yellowButton("Stop", () {
-              // ignore: avoid_print
-              print('Stop button pressed');
-            }, context, 1)
+            yellowButton("Stop", () => {}, context, 1)
           ],
         ),
       ),

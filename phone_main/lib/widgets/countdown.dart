@@ -5,11 +5,11 @@ import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:vibration/vibration.dart';
 import 'package:logger/logger.dart';
 
+// ignore: use_key_in_widget_constructors
 class CountdownWidget extends StatefulWidget {
-
-  const CountdownWidget({Key? key}) : super(key: key); // Modify constructor
-
+  const CountdownWidget({Key? key}) : super(key: key);
   @override
+  // ignore: library_private_types_in_public_api
   _CountdownWidgetState createState() => _CountdownWidgetState();
 }
 
@@ -25,6 +25,8 @@ class _CountdownWidgetState extends State<CountdownWidget> {
 
   @override
   void initState() {
+    // final MQTTAppState appState = Provider.of<MQTTAppState>(context);
+    // currentAppState = appState;
     logger.d("Context FROM COUNTDOWNWIDGET INIT STATE is $context");
     super.initState();
     startCountdown();
@@ -42,7 +44,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
           Vibration.vibrate(pattern: [0, 90, 90, 90, 90, 90, 90, 90]);
           timer.cancel();
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => GamePage())); // Access isarService from widget
+              .push(MaterialPageRoute(builder: (context) => GamePage()));
         }
       });
     });
@@ -56,7 +58,6 @@ class _CountdownWidgetState extends State<CountdownWidget> {
 
   @override
   Widget build(BuildContext context) {
-    logger.d("Context FROM COUNTDOWNWIDGET BUILD is $context");
     return SizedBox(
       child: Container(
         color: const Color.fromARGB(255, 19, 35, 44),

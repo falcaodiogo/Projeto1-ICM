@@ -14,7 +14,6 @@ class MQTTAppState with ChangeNotifier{
     _historyText = '$_historyText\n$_receivedText';
     notifyListeners();
   }
-  
   void setAppConnectionState(MQTTAppConnectionState state) {
     _appConnectionState = state;
     notifyListeners();

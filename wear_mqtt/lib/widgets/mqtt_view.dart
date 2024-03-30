@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:phone_main/heartbeats.dart';
-import 'package:phone_main/widgets/deviceconnected.dart';
+import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
 import 'package:phone_main/mqtt/mqttmanager.dart';
@@ -33,8 +32,6 @@ class _MQTTViewState extends State<MQTTView> {
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   final Logger logger = Logger(printer: PrettyPrinter());
-  final int _maxDevices = 2; // Change here the number of devices
-  final String _uniqueClientId = (Platform.isAndroid ? 'Android_' : 'iOS_') + const Uuid().v4();
 
   @override
   void initState() {
@@ -99,54 +96,17 @@ class _MQTTViewState extends State<MQTTView> {
   Widget _buildEditableColumn(
       MQTTAppConnectionState state, BuildContext context) {
     // são os valores que segui do tutorial de mqtt
-    final MQTTAppState appState = Provider.of<MQTTAppState>(context);
-    currentAppState = appState;
-
     _hostTextController.text = 'test.mosquitto.org';
     _topicTextController.text = 'flutter/amp/cool';
 
     bool isConnected = state == MQTTAppConnectionState.connected;
-
-    if (currentAppState.getGameStarted) {
-      _startHeartbeat();
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => GamePage()));
-    }
 
     return Column(
       children: <Widget>[
         const SizedBox(
           height: 20,
         ),
-        if (isConnected && currentAppState.countDevices() < _maxDevices)
-          Column(
-            children: [
-              deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded, isConnected: currentAppState.countDevices() > 0),
-              deviceConnected(deviceName: "phone", icon: Icons.phone, isConnected: currentAppState.countPhones() > 0)
-            ],
-          ),
-            
-        if (isConnected && currentAppState.countDevices() == _maxDevices)
-          Center(
-            child: Column(
-              children: [
-                const Text(
-                  "Waiting for phone to start the game...",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: textColor
-                  ),
-                ),
-                LoadingAnimationWidget.flickr(
-                  leftDotColor: accentColor, 
-                  rightDotColor: thirdAccentColor, 
-                  size: 40
-                ),
-              ],
-            ),
-          ),
-
+        if (isConnected) yellowButton("Start", _startHeartbeat, context, 0),
         if (state == MQTTAppConnectionState.connecting)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -233,11 +193,13 @@ class _MQTTViewState extends State<MQTTView> {
   }
 
   void _configureAndConnect() {
+    String osPrefix = Platform.isAndroid ? 'Android_' : 'iOS_';
+    String uniqueClientId = osPrefix + const Uuid().v4();
 
     manager = MQTTManager(
         host: _hostTextController.text,
         topic: _topicTextController.text,
-        identifier: _uniqueClientId,
+        identifier: uniqueClientId,
         state: currentAppState);
     manager.initializeMQTTClient();
     manager.connect();
@@ -260,8 +222,9 @@ class _MQTTViewState extends State<MQTTView> {
 
     const Duration heartbeatInterval = Duration(seconds: 4);
     Timer.periodic(heartbeatInterval, (timer) {
-      String heartbeatMessage = '$heartRate';
-      manager.publish(heartbeatMessage,'heartbeat/$_uniqueClientId');
+      String heartbeatMessage =
+          'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate';
+      manager.publish(heartbeatMessage);
     });
   }
 
