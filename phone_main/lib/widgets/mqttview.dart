@@ -185,7 +185,7 @@ class _MQTTViewState extends State<MQTTView> {
                 MaterialPageRoute(
                   builder: ((context) => Provider<MQTTAppState>(
                     create: (_) => MQTTAppState(),
-                    child: Animate(child: CountdownWidget(isarService: isarService,)),
+                    child: Animate(child: CountdownWidget(isarService: isarService, context: context)),
                   ))
                 ),
               );

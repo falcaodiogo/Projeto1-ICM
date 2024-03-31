@@ -1,14 +1,18 @@
+import 'dart:async';
+
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phone_main/database/user.dart';
 
 class IsarService {
   late Future<Isar> db;
+  
   //we define db that we want to use as late
   IsarService() {
     db = openDB();
     //open DB for use.
   }
+  
   //Save a new user to the Isar database.
   Future<void> saveUser(User newUser) async {
     final isar = await db;

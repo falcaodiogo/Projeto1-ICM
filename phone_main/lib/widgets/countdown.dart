@@ -8,8 +8,9 @@ import 'package:logger/logger.dart';
 
 class CountdownWidget extends StatefulWidget {
   final IsarService isarService;
+  final BuildContext context;
 
-  const CountdownWidget({Key? key, required this.isarService}) : super(key: key);
+  const CountdownWidget({Key? key, required this.isarService, required this.context}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -47,7 +48,7 @@ class _CountdownWidgetState extends State<CountdownWidget> {
           Vibration.vibrate(pattern: [0, 90, 90, 90, 90, 90, 90, 90]);
           timer.cancel();
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => GamePage(isarService: widget.isarService)));
+              .push(MaterialPageRoute(builder: (context) => GamePage(isarService: widget.isarService, context: context)));
         }
       });
     });

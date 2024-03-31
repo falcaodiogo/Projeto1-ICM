@@ -10,8 +10,9 @@ import 'package:provider/provider.dart';
 class GamePage extends StatelessWidget {
   final Logger logger = Logger();
   final IsarService isarService; 
+  final BuildContext context;
 
-  GamePage({super.key, required this.isarService}); 
+  GamePage({super.key, required this.isarService, required this.context}); 
 
   @override
   Widget build(BuildContext context) {

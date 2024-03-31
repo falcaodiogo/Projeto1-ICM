@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phone_main/database/user.dart';
 import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/widgets/playerwidget.dart';
 import 'package:phone_main/widgets/timerwidget.dart';
@@ -20,43 +21,29 @@ Widget columnGameState(BuildContext context, IsarService isarService) {
           onTimerEnd: goToPage4,
         ),
         const SizedBox(height: 35),
-        FutureBuilder<String>(
-          future: isarService.getUserName(1),
+        StreamBuilder<List<User>>(
+          stream: isarService.listenUser(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // Placeholder for loading
-            }
             if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             }
-            return PlayerWidget(
-              brightColor: const Color.fromARGB(255, 195, 205, 132),
-              darkColor: const Color.fromARGB(255, 169, 177, 117), 
-              name: snapshot.data ?? "", // Use snapshot.data to get the result
-              heartrate: "", // Replace with actual value if needed
+            return Column(
+              children: snapshot.data!.map((user) {
+                return Column(
+                  children: [
+                    PlayerWidget(
+                      brightColor: const Color.fromARGB(255, 195, 205, 132),
+                      darkColor: const Color.fromARGB(255, 169, 177, 117),
+                      name: user.name!,
+                      heartrate: user.heartrate!.isNotEmpty ? user.heartrate!.last.toString() : "", // assuming heartrate is a list
+                    ),
+                    const SizedBox(height: 35),
+                  ],
+                );
+              }).toList(),
             );
           },
         ),
-        const SizedBox(height: 35),
-        FutureBuilder<double>(
-          future: isarService.getLastHeartRate(1),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // Placeholder for loading
-            }
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-            return PlayerWidget(
-              brightColor: const Color.fromARGB(255, 204, 154, 99),
-              darkColor: const Color.fromARGB(255, 164, 127, 84), 
-              name: "", // Replace with actual value if needed
-              heartrate: snapshot.data?.toString() ?? "", // Use snapshot.data to get the result
-            );
-          },
-        ),
-        const SizedBox(height: 35),
-        // go to first page
         ElevatedButton(
           onPressed: () {
             Navigator.of(context).popUntil((route) => route.isFirst);
