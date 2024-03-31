@@ -35,9 +35,10 @@ Widget columnGameState(BuildContext context, IsarService isarService) {
                       brightColor: const Color.fromARGB(255, 195, 205, 132),
                       darkColor: const Color.fromARGB(255, 169, 177, 117),
                       name: user.name!,
-                      heartrate: user.heartrate!.isNotEmpty ? user.heartrate!.last.toString() : "", // assuming heartrate is a list
+                      heartrate: user.heartrate!.isNotEmpty ? user.heartrate!.last.toString() : "",
                     ),
                     const SizedBox(height: 35),
+                    
                   ],
                 );
               }).toList(),

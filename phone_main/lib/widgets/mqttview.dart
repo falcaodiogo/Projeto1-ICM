@@ -38,13 +38,14 @@ class _MQTTViewState extends State<MQTTView> {
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static final Logger logger = Logger();
   final int _maxDevices = 2;
+  int count = 1;
   User user1 = User(1, "name1", []);
-  // User user2 = User(2, "name2", []);
+  User user2 = User(2, "name2", []);
 
   @override
   void initState() {
     isarService.saveUser(user1);
-    // isarService.saveUser(user2);
+    isarService.saveUser(user2);
     super.initState();
   }
 
@@ -59,12 +60,18 @@ class _MQTTViewState extends State<MQTTView> {
   @override
   Widget build(BuildContext context) {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
-    currentAppState = appState;
+    currentAppState = appState;    
 
     // update heartrate (message = 'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate')
     double heartRate = currentAppState.getReceivedText.contains('Heart Rate') ? double.parse(currentAppState.getReceivedText.split('Heart Rate: ')[1]) : 0;
     
-    isarService.addHeartRate(user1, heartRate);
+    if (count % 2 == 0) {
+      isarService.addHeartRate(user1, heartRate);
+      count++;
+    } else {
+      isarService.addHeartRate(user2, heartRate);
+      count++;
+    }
 
     // continue
     logger.d('Number of devices: ${currentAppState.countDevices()}');
@@ -77,7 +84,7 @@ class _MQTTViewState extends State<MQTTView> {
             connectionStateText(_prepareStateMessageFrom(
                 currentAppState.getAppConnectionState)),
           mainColumn(),
-          _buildScrollableTextWith(currentAppState.getReceivedText),
+          _buildScrollableTextWith(currentAppState.getHistoryText),
         ],
       ),
     );
@@ -173,7 +180,7 @@ class _MQTTViewState extends State<MQTTView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               deviceConnected(deviceName: "phone", icon: Icons.phone_android_rounded, isConnected: currentAppState.countDevices() > 0),
-              deviceConnected(deviceName: "smartwatch", icon: Icons.watch_rounded, isConnected: currentAppState.countWatches() > 0)
+              deviceConnected(deviceName: "smartwatches", icon: Icons.watch_rounded, isConnected: currentAppState.countWatches() > 1),
             ]
           ),
           
