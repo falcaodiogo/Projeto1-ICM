@@ -34,6 +34,13 @@ class IsarService {
     return await isar.users.get(id);
   }
 
+  // get id by name
+  Future<int> getIdByName(String name) async {
+    final isar = await db;
+    //Find the user with the specified name in the user collection and return the ID.
+    return (await isar.users.where().filter().nameEqualTo(name).findFirst())?.id ?? 0;
+  }
+
   // get list of heartrate of user
   Future<List<double>> getHeartRateList(User user) async {
     // ignore: unused_local_variable
@@ -85,6 +92,15 @@ class IsarService {
     await isar.writeTxn(() async {
       //Perform a write transaction to update the user in the database.
       await isar.users.put(user);
+    });
+  }
+
+  // clean all users from the Isar database.
+  Future<void> cleanAllUser() async {
+    final isar = await db;
+    //Perform a write transaction to delete all users in the database.
+    await isar.writeTxn(() async {
+      await isar.users.clear();
     });
   }
 

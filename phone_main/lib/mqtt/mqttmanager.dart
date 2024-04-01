@@ -1,32 +1,42 @@
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:phone_main/database/user.dart';
+import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:logger/logger.dart';
 
 class MQTTManager {
   // Private instance of client
   final MQTTAppState _currentState;
+  final IsarService _isarService;
   MqttServerClient? _client;
-  final String _identifier;
+  final int _identifier;
   final String _host;
   final String _topic;
+  final int _maxDevices = 3;
+  User user1 = User(0, "Player 1", []);
+  User user2 = User(0, "Player 2", []);
+  int count = 1;
+  int counterName = 1;
 
   var logger = Logger(printer: PrettyPrinter());
 
   // Constructor
   // ignore: sort_constructors_first
   MQTTManager(
-      {required String host,
+      {required IsarService isarService,
+      required String host,
       required String topic,
-      required String identifier,
+      required int identifier,
       required MQTTAppState state})
-      : _identifier = identifier,
+      : _isarService = isarService,
+        _identifier = identifier,
         _host = host,
         _topic = topic,
         _currentState = state;
 
   void initializeMQTTClient() {
-    _client = MqttServerClient(_host, _identifier);
+    _client = MqttServerClient(_host, _identifier.toString());
     _client!.port = 1883;
     _client!.keepAlivePeriod = 20;
     _client!.onDisconnected = onDisconnected;
@@ -38,7 +48,7 @@ class MQTTManager {
     _client!.onSubscribed = onSubscribed;
 
     final MqttConnectMessage connMess = MqttConnectMessage()
-        .withClientIdentifier(_identifier)
+        .withClientIdentifier(_identifier.toString())
         .withWillTopic(
             'willtopic') // If you set this you must set a will message
         .withWillMessage('My Will message')
@@ -63,13 +73,12 @@ class MQTTManager {
   }
 
   void disconnect() {
-
-    _currentState.removeDevice(_identifier);
+    _currentState.removeDevice(_identifier.toString());
     _removeDeviceInfo();
 
     Future.delayed(const Duration(seconds: 2), () {
       logger.d('Disconnected');
-      _client!.disconnect(); 
+      _client!.disconnect();
     });
   }
 
@@ -89,12 +98,13 @@ class MQTTManager {
     logger.d('EXAMPLE::OnDisconnected client callback - Client disconnection');
     if (_client!.connectionStatus!.returnCode ==
         MqttConnectReturnCode.noneSpecified) {
-      logger.d('EXAMPLE::OnDisconnected callback is solicited, this is correct');
+      logger
+          .d('EXAMPLE::OnDisconnected callback is solicited, this is correct');
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
   }
 
-  /// The successful connect callback
+  // The successful connect callback
   void onConnected() {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
     logger.d('EXAMPLE::Mosquitto client connected....');
@@ -103,7 +113,8 @@ class MQTTManager {
     _publishDeviceInfo();
 
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
-    _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+    _client!.updates!
+        .listen((List<MqttReceivedMessage<MqttMessage?>>? c) async {
       // ignore: avoid_as
       final MqttPublishMessage recMess = c![0].payload as MqttPublishMessage;
 
@@ -111,21 +122,49 @@ class MQTTManager {
       final String pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
 
-      if (_currentState.countDevices() < 2 && pt.contains("smartwatch")) {
+      if (_currentState.countDevices() < _maxDevices &&
+          pt.contains("smartwatch")) {
         _currentState.addDevice(pt);
+
         _publishDeviceInfo();
-        logger.d("Received a new message and added device");
+      
+        logger.f("COUNTER $counterName");
+        int id = int.parse(pt.split(",")[0]);
+        if (counterName == 1) {
+          user2 = User(id, "Player 2", []);
+          _isarService.saveUser(user2);
+          logger.i("\n\nUser added to database");
+          counterName++;
+        }
+        if (counterName == 2 || counterName == 3) {
+          user1 = User(id, "Player 1", []);
+          _isarService.saveUser(user1);
+          logger.i("\n\nUser added to database");
+          counterName++;
+        }
       }
 
       if (pt.contains("remove")) {
         _currentState.removeDevice(pt.split(",")[1]);
         logger.d("Received a remove message and removed device");
-
-      } 
-      
-      else {
-        _currentState.setReceivedText(pt);
       }
+
+      if (pt.contains("Heart Rate")) {
+        double heartRate =
+            double.parse(pt.split('Heart Rate: ')[1].split(', identifier')[0]);
+
+        int userId = int.parse(pt.split(', identifier: ')[1]);
+        logger.e("Heart Rate: $heartRate, identifier: $userId");
+        if (count % 2 == 0) {
+          _isarService.addHeartRate(user2, heartRate);
+          logger.i("Heart Rate added to database");
+        } else {
+          _isarService.addHeartRate(user1, heartRate);
+          logger.i("Heart Rate added to database");
+        }
+      }
+
+      _currentState.setReceivedText(pt);
 
       logger.d(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');

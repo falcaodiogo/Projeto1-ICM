@@ -8,7 +8,7 @@ import 'package:logger/logger.dart';
 class MQTTManager {
   final MQTTAppState _currentState;
   MqttServerClient? _client;
-  final String _identifier;
+  final int _identifier;
   final String _host;
   final String _topic;
 
@@ -17,7 +17,7 @@ class MQTTManager {
   MQTTManager(
       {required String host,
       required String topic,
-      required String identifier,
+      required int identifier,
       required MQTTAppState state})
       : _identifier = identifier,
         _host = host,
@@ -26,7 +26,7 @@ class MQTTManager {
 
   // not autenticated nedeed
   void initializeMQTTClient() {
-    _client = MqttServerClient(_host, _identifier);
+    _client = MqttServerClient(_host, _identifier.toString());
     _client!.port = 1883;
     _client!.keepAlivePeriod = 20;
     _client!.onDisconnected = onDisconnected;
@@ -37,7 +37,7 @@ class MQTTManager {
     _client!.onSubscribed = onSubscribed;
 
     final MqttConnectMessage connMess = MqttConnectMessage()
-        .withClientIdentifier(_identifier)
+        .withClientIdentifier(_identifier.toString())
         .withWillTopic(
             'willtopic') // If you set this you must set a will message
         .withWillMessage('My Will message')
@@ -69,7 +69,7 @@ class MQTTManager {
 
     _currentState.setGameStarted(false);
 
-    _currentState.removeDevice(_identifier);
+    _currentState.removeDevice(_identifier.toString());
     _removeDeviceInfo();
 
     Future.delayed(const Duration(seconds: 2), () {
@@ -107,7 +107,7 @@ class MQTTManager {
   void onConnected() {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
     if (kDebugMode) {
-      logger.d('EXAMPLE::Mosquitto client connected....');
+      logger.d('EXAMPLE::Mosquitto client cmessageonnected....');
     }
     _currentState.addDevice("$_identifier,smartwatch");
 
@@ -131,7 +131,7 @@ class MQTTManager {
       }
 
       if (pt.contains("remove")) {
-        _currentState.removeDevice(pt.split(',')[1]);
+        _currentState.removeDevice(pt.split(',')[1].toString());
         logger.d("Received a remove message and removed device");
       }
 

@@ -20,10 +20,12 @@ class EndPage extends StatefulWidget {
 class _EndPageState extends State<EndPage> {
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static const accentColor = Color.fromARGB(255, 255, 238, 0);
-
+  
   late Future<List<double>> user1;
   late Future<List<double>> user2;
   List<double> user1Data = List<double>.empty(growable: true);
+  int id1 = 0;
+  int id2 = 0;
   List<double> user2Data = List<double>.empty(growable: true);
   bool blurEnabled = false;
 
@@ -35,8 +37,12 @@ class _EndPageState extends State<EndPage> {
   }
 
   Future<void> _loadUserData() async {
-    List<double> user1List = await widget.isarService.getHeartRateListById(1);
-    List<double> user2List = await widget.isarService.getHeartRateListById(2);
+
+    id1 = await widget.isarService.getIdByName("Player 1");
+    id2 = await widget.isarService.getIdByName("Player 2");
+
+    List<double> user1List = await widget.isarService.getHeartRateListById(id1);
+    List<double> user2List = await widget.isarService.getHeartRateListById(id2);
     
     setState(() {
       user1Data = user1List;

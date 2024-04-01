@@ -1,7 +1,6 @@
-import 'dart:io' show Platform;
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:phone_main/database/user.dart';
 import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/widgets/appbar.dart';
 import 'package:phone_main/widgets/countdown.dart';
@@ -11,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:phone_main/mqtt/mqttmanager.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:uuid/uuid.dart';
 import 'package:logger/logger.dart';
 
 class MQTTView extends StatefulWidget {
@@ -36,15 +34,12 @@ class _MQTTViewState extends State<MQTTView> {
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static final Logger logger = Logger();
-  final int _maxDevices = 2;
+  final int _maxDevices = 3;
   int count = 1;
-  User user1 = User(1, "name1", []);
-  User user2 = User(2, "name2", []);
 
   @override
   void initState() {
-    isarService.saveUser(user1);
-    isarService.saveUser(user2);
+    isarService.cleanAllUser();
     super.initState();
   }
 
@@ -59,21 +54,9 @@ class _MQTTViewState extends State<MQTTView> {
   @override
   Widget build(BuildContext context) {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
-    currentAppState = appState;    
-
-    // 'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate, identifier: $uniqueClientId';
-    double heartRate = currentAppState.getReceivedText.contains('Heart Rate') ? double.parse(currentAppState.getReceivedText.split('Heart Rate: ')[1].split(', identifier')[0]) : 0.0;
-    
-    if (count % 2 == 0) {
-      isarService.addHeartRate(user1, heartRate);
-      count++;
-    } else {
-      isarService.addHeartRate(user2, heartRate);
-      count++;
-    }
+    currentAppState = appState;
 
     // continue
-    logger.d('Number of devices: ${currentAppState.countDevices()}');
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -108,7 +91,6 @@ class _MQTTViewState extends State<MQTTView> {
   Widget mainColumn() {
     _hostTextController.text = 'test.mosquitto.org';
     _topicTextController.text = 'flutter/amp/cool';
-    logger.d('MainColumn CONTEXT: $context');
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -138,7 +120,8 @@ class _MQTTViewState extends State<MQTTView> {
                 SizedBox(height: 20),
               ],
             ),
-          if (currentAppState.getAppConnectionState == MQTTAppConnectionState.connecting)
+          if (currentAppState.getAppConnectionState ==
+              MQTTAppConnectionState.connecting)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -170,33 +153,34 @@ class _MQTTViewState extends State<MQTTView> {
   Widget _buildConnecteButtonFrom(MQTTAppConnectionState state) {
     bool isConnected = state == MQTTAppConnectionState.connected;
     String connectionStatus = isConnected ? "Connected" : "Connect";
-    logger.d('BUILD CONNECTED BUTTON FORM CONTEXT: $context');
     return Column(
       children: [
         if (isConnected)
           if (currentAppState.countDevices() < _maxDevices)
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              deviceConnected(deviceName: "phone", icon: Icons.phone_android_rounded, isConnected: currentAppState.countDevices() > 0),
-              deviceConnected(deviceName: "smartwatches", icon: Icons.watch_rounded, isConnected: currentAppState.countWatches() > 1),
-            ]
-          ),
-          
-          if (currentAppState.countDevices() == _maxDevices)
-            yellowButton("Start", () {
-              manager.startGame();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
+            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              deviceConnected(
+                  deviceName: "phone",
+                  icon: Icons.phone_android_rounded,
+                  isConnected: currentAppState.countDevices() > 0),
+              deviceConnected(
+                  deviceName: "smartwatches",
+                  icon: Icons.watch_rounded,
+                  isConnected: currentAppState.countWatches() > 1),
+            ]),
+        if (currentAppState.countDevices() == _maxDevices)
+          yellowButton("Start", () {
+            manager.startGame();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
                   builder: ((context) => Provider<MQTTAppState>(
-                    create: (_) => MQTTAppState(),
-                    child: Animate(child: CountdownWidget(isarService: isarService, context: context)),
-                  ))
-                ),
-              );
-            }),
-
+                        create: (_) => MQTTAppState(),
+                        child: Animate(
+                            child: CountdownWidget(
+                                isarService: isarService, context: context)),
+                      ))),
+            );
+          }),
         if (isConnected) const SizedBox(height: 90),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -239,10 +223,10 @@ class _MQTTViewState extends State<MQTTView> {
   }
 
   void _configureAndConnect() {
-    String osPrefix = Platform.isAndroid ? 'Android_' : 'iOS_';
-    String uniqueClientId = osPrefix + const Uuid().v4(); // Generate UUID v4
+    int uniqueClientId = Random().nextInt(1000) + Random().nextInt(1000);
 
     manager = MQTTManager(
+        isarService: isarService,
         host: _hostTextController.text,
         topic: _topicTextController.text,
         identifier: uniqueClientId,

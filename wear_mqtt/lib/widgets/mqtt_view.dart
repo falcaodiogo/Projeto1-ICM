@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
 import 'package:phone_main/mqtt/mqttmanager.dart';
-import 'package:uuid/uuid.dart';
 import 'package:logger/logger.dart';
 import 'package:workout/workout.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -31,7 +31,8 @@ class _MQTTViewState extends State<MQTTView> {
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   final Logger logger = Logger(printer: PrettyPrinter());
-  String uniqueClientId = "WearOS_${const Uuid().v4()}";
+  //Generate a random integer identifier
+  final int uniqueClientId = Random().nextInt(1000) + Random().nextInt(1001);
 
   @override
   void initState() {
