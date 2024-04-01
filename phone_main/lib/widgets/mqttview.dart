@@ -4,7 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phone_main/database/user.dart';
 import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/widgets/appbar.dart';
-//import 'package:phone_main/widgets/columngame.dart';
 import 'package:phone_main/widgets/countdown.dart';
 import 'package:phone_main/widgets/deviceconnected.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
@@ -62,8 +61,8 @@ class _MQTTViewState extends State<MQTTView> {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
     currentAppState = appState;    
 
-    // update heartrate (message = 'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate')
-    double heartRate = currentAppState.getReceivedText.contains('Heart Rate') ? double.parse(currentAppState.getReceivedText.split('Heart Rate: ')[1]) : 0;
+    // 'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate, identifier: $uniqueClientId';
+    double heartRate = currentAppState.getReceivedText.contains('Heart Rate') ? double.parse(currentAppState.getReceivedText.split('Heart Rate: ')[1].split(', identifier')[0]) : 0.0;
     
     if (count % 2 == 0) {
       isarService.addHeartRate(user1, heartRate);

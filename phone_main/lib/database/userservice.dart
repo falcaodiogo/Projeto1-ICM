@@ -42,6 +42,13 @@ class IsarService {
     return user.heartrate ?? [];
   }
 
+  // get list of heartrate of user by id
+  Future<List<double>> getHeartRateListById(int id) async {
+    final isar = await db;
+    //Find the user with the specified ID in the user collection and return the heartrate list.
+    return (await isar.users.get(id))?.heartrate ?? [];
+  }
+
   // get last heartrate of user
   Future<double> getLastHeartRate(int id) async {
     final isar = await db;

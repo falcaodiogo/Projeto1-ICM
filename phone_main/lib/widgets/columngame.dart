@@ -9,7 +9,7 @@ Widget columnGameState(BuildContext context, IsarService isarService) {
   void goToPage4() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EndPage()),
+      MaterialPageRoute(builder: (context) => EndPage(isarService: isarService)),
     );
   }
 

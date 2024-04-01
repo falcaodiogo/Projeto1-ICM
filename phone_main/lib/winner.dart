@@ -1,25 +1,47 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 
 // ignore: use_key_in_widget_constructors
 class EndPage extends StatefulWidget {
+  final IsarService isarService;
+
+  // ignore: use_key_in_widget_constructors
+  const EndPage({required this.isarService});
+
   @override
-  // ignore: library_private_types_in_public_api
-  _EndPageState createState() => _EndPageState();
+  State<StatefulWidget> createState() {
+    return _EndPageState();
+  }
 }
 
 class _EndPageState extends State<EndPage> {
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static const accentColor = Color.fromARGB(255, 255, 238, 0);
 
+  late Future<List<double>> user1;
+  late Future<List<double>> user2;
+  List<double> user1Data = List<double>.empty(growable: true);
+  List<double> user2Data = List<double>.empty(growable: true);
   bool blurEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _toggleBlurEveryTwoSeconds();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    List<double> user1List = await widget.isarService.getHeartRateListById(1);
+    List<double> user2List = await widget.isarService.getHeartRateListById(2);
+    
+    setState(() {
+      user1Data = user1List;
+      user2Data = user2List;
+    });
   }
 
   void _toggleBlurEveryTwoSeconds() {
@@ -62,11 +84,11 @@ class _EndPageState extends State<EndPage> {
                   color: accentColor,
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'Player 1\nwon!',
+                    _gameResult(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.black,
                         fontSize: 46,
                         fontWeight: FontWeight.bold,
@@ -105,5 +127,34 @@ class _EndPageState extends State<EndPage> {
       backgroundColor: Colors.transparent,
       elevation: 0,
     );
+  }
+
+  String _gameResult() {
+    double score1 = 0.0;
+    double score2 = 0.0;
+    String name1 = "Player 1";
+    String name2 = "Player 2";
+
+    // calculate the average of the list
+    for (int i = 0; i < user1Data.length; i++) {
+      if (user1Data[i] == 0) {
+        continue;
+      } else { 
+        score1 += user1Data[i];
+      }
+    }
+
+    for (int i = 0; i < user2Data.length; i++) {
+      if (user2Data[i] == 0) {
+        continue;
+      } else { 
+        score2 += user2Data[i];
+      }
+    }
+
+    score1 = score1 / user1Data.length;
+    score2 = score2 / user2Data.length;
+    
+    return score1 == score2 ? "It's a tie!" : score1 > score2 ? name1 : name2;
   }
 }

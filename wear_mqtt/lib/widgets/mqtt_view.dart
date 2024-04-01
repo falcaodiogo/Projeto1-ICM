@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +31,7 @@ class _MQTTViewState extends State<MQTTView> {
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   final Logger logger = Logger(printer: PrettyPrinter());
+  String uniqueClientId = "WearOS_${const Uuid().v4()}";
 
   @override
   void initState() {
@@ -193,9 +193,6 @@ class _MQTTViewState extends State<MQTTView> {
   }
 
   void _configureAndConnect() {
-    String osPrefix = Platform.isAndroid ? 'Android_' : 'iOS_';
-    String uniqueClientId = osPrefix + const Uuid().v4();
-
     manager = MQTTManager(
         host: _hostTextController.text,
         topic: _topicTextController.text,
@@ -223,7 +220,7 @@ class _MQTTViewState extends State<MQTTView> {
     const Duration heartbeatInterval = Duration(seconds: 4);
     Timer.periodic(heartbeatInterval, (timer) {
       String heartbeatMessage =
-          'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate';
+          'Heartbeat: ${DateTime.now()}, Heart Rate: $heartRate, identifier: $uniqueClientId';
       manager.publish(heartbeatMessage);
     });
   }

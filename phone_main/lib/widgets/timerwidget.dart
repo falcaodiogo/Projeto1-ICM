@@ -14,7 +14,7 @@ class TimerWidget extends StatefulWidget {
 }
 
 class _TimerWidgetState extends State<TimerWidget> {
-  int _timerCountdown = 30;
+  int _timerCountdown = 40;
   Timer? _timer;
 
   @override
