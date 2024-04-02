@@ -51,7 +51,6 @@ class _MQTTViewState extends State<MQTTView> {
   Widget build(BuildContext context) {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
     currentAppState = appState;
-    logger.d('Number of devices: ${currentAppState.countDevices()}');
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[

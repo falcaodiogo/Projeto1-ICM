@@ -16,8 +16,6 @@ class MQTTManager {
   final int _maxDevices = 3;
   User user1 = User(0, "Player 1", []);
   User user2 = User(0, "Player 2", []);
-  int count = 1;
-  int counterName = 1;
 
   var logger = Logger(printer: PrettyPrinter());
 
@@ -124,23 +122,23 @@ class MQTTManager {
 
       if (_currentState.countDevices() < _maxDevices &&
           pt.contains("smartwatch")) {
-        _currentState.addDevice(pt);
+        
+          _currentState.addDevice(pt);
 
-        _publishDeviceInfo();
-      
-        logger.f("COUNTER $counterName");
-        int id = int.parse(pt.split(",")[0]);
-        if (counterName == 1) {
-          user2 = User(id, "Player 2", []);
-          _isarService.saveUser(user2);
-          logger.i("\n\nUser added to database");
-          counterName++;
+        if (user1.name != "" ) {
+          _publishDeviceInfo();
         }
-        if (counterName == 2 || counterName == 3) {
-          user1 = User(id, "Player 1", []);
+        
+        int id = int.parse(pt.split(",")[0]);
+        String playerName = pt.split(",")[2];
+        if (playerName == "Player 1") {
+          user1 = User(id, playerName, []);
           _isarService.saveUser(user1);
-          logger.i("\n\nUser added to database");
-          counterName++;
+          logger.i("\n\nUser 1 added to database WITH ID $id and its type is ${pt.split(",")[1]}");
+        } else {
+          user2 = User(id, playerName, []);
+          _isarService.saveUser(user2);
+          logger.i("\n\nUser 2 added to database WITH ID $id and player name $playerName");
         }
       }
 
@@ -155,12 +153,13 @@ class MQTTManager {
 
         int userId = int.parse(pt.split(', identifier: ')[1]);
         logger.e("Heart Rate: $heartRate, identifier: $userId");
-        if (count % 2 == 0) {
-          _isarService.addHeartRate(user2, heartRate);
-          logger.i("Heart Rate added to database");
-        } else {
+
+        if (userId == user1.id) {
           _isarService.addHeartRate(user1, heartRate);
-          logger.i("Heart Rate added to database");
+          logger.i("Heart Rate added to database from USER 1 with heart rate: $heartRate");
+        } else {
+          _isarService.addHeartRate(user2, heartRate);
+          logger.i("Heart Rate added to database from USER 2 with heart rate: $heartRate");
         }
       }
 

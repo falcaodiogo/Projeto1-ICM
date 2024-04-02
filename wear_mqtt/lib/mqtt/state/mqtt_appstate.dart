@@ -56,6 +56,6 @@ class MQTTAppState with ChangeNotifier{
   }
 
   int countWatches() {
-    return _connectedDevices.where((element) => element['deviceType'] == 'watch').length;
+    return _connectedDevices.where((element) => element['deviceType'] == 'smartwatch').length;
   }
 }

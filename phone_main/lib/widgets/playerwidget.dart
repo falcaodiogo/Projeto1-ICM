@@ -33,9 +33,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
     currentAppState = appState;
 
-    logger.d("Context FROM PLAYERWIDGET is $context");
-    logger.d("Current App State is $currentAppState");
-
     return Container(
       decoration: BoxDecoration(
         color: widget.brightColor,

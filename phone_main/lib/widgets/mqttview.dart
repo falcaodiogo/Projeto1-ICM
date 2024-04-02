@@ -169,7 +169,6 @@ class _MQTTViewState extends State<MQTTView> {
             ]),
         if (currentAppState.countDevices() == _maxDevices)
           yellowButton("Start", () {
-            manager.startGame();
             Navigator.push(
               context,
               MaterialPageRoute(

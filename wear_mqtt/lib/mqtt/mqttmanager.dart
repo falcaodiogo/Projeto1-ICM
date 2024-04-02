@@ -11,6 +11,7 @@ class MQTTManager {
   final int _identifier;
   final String _host;
   final String _topic;
+  final int _maxDevices = 3;
 
   var logger = Logger( printer: PrettyPrinter());
 
@@ -123,11 +124,12 @@ class MQTTManager {
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message!); // não mexer no !
       
         
-      if (_currentState.countDevices() < 2) {
-        if (pt.contains("phone") && !_currentState.containsDevice(pt)) {
+      if (_currentState.countDevices() < _maxDevices) {
+        if (pt.contains("phone") || (pt.contains("smartwatch") && !_currentState.containsDevice(pt))) {
           _currentState.addDevice(pt);
           _publishDeviceInfo();
         }
+        logger.t("NUMBER OF WATCHES: ${_currentState.countWatches()}");
       }
 
       if (pt.contains("remove")) {
@@ -153,7 +155,7 @@ class MQTTManager {
   }
 
   void _publishDeviceInfo() {
-    String message = '$_identifier,smartwatch';
+    String message = '$_identifier,smartwatch,Player ${_currentState.countWatches()}';
     publish(message);
   }
 
