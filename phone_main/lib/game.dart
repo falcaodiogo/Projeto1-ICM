@@ -16,7 +16,6 @@ class GamePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    logger.d("Context FROM GAMEPAGE is $context");
     return ChangeNotifierProvider(
       create: (context) => MQTTAppState(),
       child: Container(

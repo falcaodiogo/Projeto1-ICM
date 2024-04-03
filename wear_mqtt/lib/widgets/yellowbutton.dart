@@ -3,14 +3,14 @@ import 'package:phone_main/endpage.dart';
 import 'package:phone_main/heartbeats.dart';
 
 Widget yellowButton(
-    String text, Function onPressed, BuildContext context, int first) {
+    String text, Function onPressed, BuildContext context, int first, String playerName) {
   return ElevatedButton(
     onPressed: () {
       onPressed();
       switch (first) {
         case 0:
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => GamePage()));
+              .push(MaterialPageRoute(builder: (context) => GamePage(playerName)));
           break;
         case 1:
           Navigator.of(context)

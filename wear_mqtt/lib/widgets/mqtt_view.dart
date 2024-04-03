@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:phone_main/widgets/deviceconnected.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 import 'package:provider/provider.dart';
 import 'package:phone_main/mqtt/state/mqtt_appstate.dart';
@@ -31,7 +32,7 @@ class _MQTTViewState extends State<MQTTView> {
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   final Logger logger = Logger(printer: PrettyPrinter());
-  //Generate a random integer identifier
+  final int _maxDevices = 3;
   final int uniqueClientId = Random().nextInt(1000) + Random().nextInt(1001);
 
   @override
@@ -106,7 +107,24 @@ class _MQTTViewState extends State<MQTTView> {
         const SizedBox(
           height: 20,
         ),
-        if (isConnected) yellowButton("Start", _startHeartbeat, context, 0),
+        if (isConnected && currentAppState.countDevices() < _maxDevices)
+          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            deviceConnected(
+                deviceName: "phone",
+                icon: Icons.phone_android_rounded,
+                isConnected: currentAppState.countPhones() > 0),
+            deviceConnected(
+                deviceName: "smartwatch 1",
+                icon: Icons.watch_rounded,
+                isConnected: currentAppState.countWatches() == 1),
+            deviceConnected(
+                deviceName: "smartwatch 2",
+                icon: Icons.watch_rounded,
+                isConnected: currentAppState.countWatches() > 1),
+          ]),
+        if (isConnected && currentAppState.countDevices() == _maxDevices)
+          yellowButton("Start", _startHeartbeat, context, 0,
+              currentAppState.getPlayerName()),
         if (state == MQTTAppConnectionState.connecting)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

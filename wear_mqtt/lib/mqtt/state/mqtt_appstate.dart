@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
+import 'package:logger/logger.dart';
 
 enum MQTTAppConnectionState { connected, disconnected, connecting }
 class MQTTAppState with ChangeNotifier{
   MQTTAppConnectionState _appConnectionState = MQTTAppConnectionState.disconnected;
   String _receivedText = '';
   String _historyText = '';
+  String _playerName = '';
   bool _gameStarted = false;
+  Logger logger = Logger();
   final List<Map<String, dynamic>> _connectedDevices = [];
 
   void setReceivedText(String text) {
@@ -23,6 +26,16 @@ class MQTTAppState with ChangeNotifier{
     notifyListeners();
   }
 
+  void setPlayerName(String name) {
+    _playerName = name;
+    notifyListeners();
+  }
+
+
+  String getPlayerName() {
+    return _playerName;
+  }
+
   String get getReceivedText => _receivedText;
   String get getHistoryText => _historyText;
   bool get getGameStarted => _gameStarted;
@@ -35,6 +48,7 @@ class MQTTAppState with ChangeNotifier{
     _connectedDevices.add({'deviceId': parts[0], 'deviceType': parts[1]});
     notifyListeners();
   }
+
 
   void removeDevice(String deviceId) {
     if (!_connectedDevices.any((element) => element['deviceId'] == deviceId)) return;

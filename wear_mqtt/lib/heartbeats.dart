@@ -9,6 +9,10 @@ class GamePage extends StatelessWidget {
   static const secondAccentColor = Color.fromARGB(255, 231, 224, 126);
   static const thirdAccentColor = Color.fromARGB(255, 80, 78, 54);
   static const textColor = Color.fromARGB(255, 224, 241, 255);
+  final String playerName;
+
+  // constructor for GamePage
+  GamePage(this.playerName, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +40,21 @@ class GamePage extends StatelessWidget {
               semanticsLabel: 'A red up arrow',
               width: 45,
             ),
+            Center(
+              child: Text(
+                playerName,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: accentColor,
+                    fontSize: 15,
+                    fontFamily: 'Roboto',
+                    decoration: TextDecoration.none),
+              )
+            ),
             const SizedBox(
               height: 15,
             ),
-            yellowButton("Stop", () => {}, context, 1)
+            yellowButton("Stop", () => {}, context, 1, playerName),
           ],
         ),
       ),

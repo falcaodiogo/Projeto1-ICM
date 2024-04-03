@@ -56,7 +56,7 @@ class _EndPageState extends State<EndPage> {
               const SizedBox(height: 30),
               const SizedBox(height: kToolbarHeight),
               Center(
-                child: yellowButton("Start again", () => {}, context, 2),
+                child: yellowButton("Start again", () => {}, context, 2, ""),
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:phone_main/database/user.dart';
 import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 
@@ -21,12 +22,7 @@ class _EndPageState extends State<EndPage> {
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static const accentColor = Color.fromARGB(255, 255, 238, 0);
   
-  late Future<List<double>> user1;
-  late Future<List<double>> user2;
-  List<double> user1Data = List<double>.empty(growable: true);
-  int id1 = 0;
-  int id2 = 0;
-  List<double> user2Data = List<double>.empty(growable: true);
+  List<User> users = List<User>.empty(growable: true);
   bool blurEnabled = false;
 
   @override
@@ -38,15 +34,10 @@ class _EndPageState extends State<EndPage> {
 
   Future<void> _loadUserData() async {
 
-    id1 = await widget.isarService.getIdByName("Player 1");
-    id2 = await widget.isarService.getIdByName("Player 2");
-
-    List<double> user1List = await widget.isarService.getHeartRateListById(id1);
-    List<double> user2List = await widget.isarService.getHeartRateListById(id2);
+    List<User> usersList = await widget.isarService.getAllUser();
     
     setState(() {
-      user1Data = user1List;
-      user2Data = user2List;
+      users = usersList;
     });
   }
 
@@ -136,31 +127,17 @@ class _EndPageState extends State<EndPage> {
   }
 
   String _gameResult() {
-    double score1 = 0.0;
-    double score2 = 0.0;
-    String name1 = "Player 1";
-    String name2 = "Player 2";
-
-    // calculate the average of the list
-    for (int i = 0; i < user1Data.length; i++) {
-      if (user1Data[i] == 0) {
-        continue;
-      } else { 
-        score1 += user1Data[i];
-      }
+    List<double> scores = List<double>.empty(growable: true);
+    Map<double, String> scoreMap = <double, String>{};
+  
+    for (User user in users) {
+      double score = ((user.heartrate!.reduce((a, b) => a + b)) / user.heartrate!.length).roundToDouble();
+      scores.add(score);
+      scoreMap[score] = user.name!;
     }
 
-    for (int i = 0; i < user2Data.length; i++) {
-      if (user2Data[i] == 0) {
-        continue;
-      } else { 
-        score2 += user2Data[i];
-      }
-    }
-
-    score1 = score1 / user1Data.length;
-    score2 = score2 / user2Data.length;
+    scores.sort();
     
-    return score1 == score2 ? "It's a tie!" : score1 > score2 ? name1 : name2;
+    return scores.first == scores.last ? "Its a tie with a score of ${scores.last} for both players" : "${scoreMap[scores.last]} with a score of ${scores.last}";
   }
 }

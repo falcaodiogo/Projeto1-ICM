@@ -14,8 +14,7 @@ class MQTTManager {
   final String _host;
   final String _topic;
   final int _maxDevices = 3;
-  User user1 = User(0, "Player 1", []);
-  User user2 = User(0, "Player 2", []);
+  List<User> users = [];
 
   var logger = Logger(printer: PrettyPrinter());
 
@@ -121,24 +120,19 @@ class MQTTManager {
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message!);
 
       if (_currentState.countDevices() < _maxDevices &&
-          pt.contains("smartwatch")) {
-        
-          _currentState.addDevice(pt);
+          pt.contains("smartwatch") &&
+          !(_currentState.containsDevice(pt))) {
 
-        if (user1.name != "" ) {
-          _publishDeviceInfo();
-        }
-        
+        _currentState.addDevice(pt);
+        _publishDeviceInfo();
+
         int id = int.parse(pt.split(",")[0]);
         String playerName = pt.split(",")[2];
-        if (playerName == "Player 1") {
-          user1 = User(id, playerName, []);
-          _isarService.saveUser(user1);
-          logger.i("\n\nUser 1 added to database WITH ID $id and its type is ${pt.split(",")[1]}");
-        } else {
-          user2 = User(id, playerName, []);
-          _isarService.saveUser(user2);
-          logger.i("\n\nUser 2 added to database WITH ID $id and player name $playerName");
+        User user = User(id, playerName, []);
+
+        if (!users.contains(user)) {
+          users.add(user);
+          _isarService.saveUser(user);
         }
       }
 
@@ -154,13 +148,14 @@ class MQTTManager {
         int userId = int.parse(pt.split(', identifier: ')[1]);
         logger.e("Heart Rate: $heartRate, identifier: $userId");
 
-        if (userId == user1.id) {
-          _isarService.addHeartRate(user1, heartRate);
-          logger.i("Heart Rate added to database from USER 1 with heart rate: $heartRate");
-        } else {
-          _isarService.addHeartRate(user2, heartRate);
-          logger.i("Heart Rate added to database from USER 2 with heart rate: $heartRate");
+        for (User user in users) {
+          if (user.id == userId) {
+            user.heartrate?.add(heartRate);
+            _isarService.addHeartRate(user, heartRate);
+            break;
+          }
         }
+
       }
 
       _currentState.setReceivedText(pt);
@@ -186,6 +181,11 @@ class MQTTManager {
 
   void startGame() {
     String message = 'start';
+    publish(message);
+  }
+
+  void endGame() {
+    String message = 'end';
     publish(message);
   }
 }

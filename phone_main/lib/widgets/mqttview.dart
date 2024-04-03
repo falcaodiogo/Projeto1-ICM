@@ -66,7 +66,6 @@ class _MQTTViewState extends State<MQTTView> {
             connectionStateText(_prepareStateMessageFrom(
                 currentAppState.getAppConnectionState)),
           mainColumn(),
-          _buildScrollableTextWith(currentAppState.getHistoryText),
         ],
       ),
     );
@@ -155,19 +154,22 @@ class _MQTTViewState extends State<MQTTView> {
     String connectionStatus = isConnected ? "Connected" : "Connect";
     return Column(
       children: [
-        if (isConnected)
-          if (currentAppState.countDevices() < _maxDevices)
+          if (isConnected && currentAppState.countDevices() < _maxDevices)
             Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               deviceConnected(
                   deviceName: "phone",
                   icon: Icons.phone_android_rounded,
-                  isConnected: currentAppState.countDevices() > 0),
+                  isConnected: currentAppState.countPhones() > 0),
               deviceConnected(
-                  deviceName: "smartwatches",
+                  deviceName: "smartwatch 1",
+                  icon: Icons.watch_rounded,
+                  isConnected: currentAppState.countWatches() == 1),
+              deviceConnected(
+                  deviceName: "smartwatch 2",
                   icon: Icons.watch_rounded,
                   isConnected: currentAppState.countWatches() > 1),
             ]),
-        if (currentAppState.countDevices() == _maxDevices)
+        if (isConnected && currentAppState.countDevices() == _maxDevices)
           yellowButton("Start", () {
             Navigator.push(
               context,
@@ -238,33 +240,4 @@ class _MQTTViewState extends State<MQTTView> {
   void _disconnect() {
     manager.disconnect();
   }
-
-  Widget _buildScrollableTextWith(String text) {
-    return Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SizedBox(
-          width: 400,
-          height: 200,
-          child: SingleChildScrollView(
-            child: Text(
-              text,
-              style: const TextStyle(color: textColor),
-            ),
-          ),
-        ));
-  }
-
-  // Widget buildanother(MQTTAppState appState) {
-  //   return Consumer<MQTTAppState>(
-  //     builder: (context, appState, _) {
-  //       String latestMessage = appState.getReceivedText;
-  //       return Column(
-  //         children: [
-  //           columnGameState(context),
-  //           Text('Latest Message: $latestMessage'),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 }

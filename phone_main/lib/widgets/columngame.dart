@@ -27,6 +27,12 @@ Widget columnGameState(BuildContext context, IsarService isarService) {
             if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator(); // Show a loading indicator while waiting
+            }
+            if (snapshot.data == null) {
+              return const Text('No data available'); // Show a message when there's no data
+            }
             return Column(
               children: snapshot.data!.map((user) {
                 return Column(

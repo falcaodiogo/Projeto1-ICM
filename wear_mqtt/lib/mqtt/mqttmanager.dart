@@ -110,8 +110,8 @@ class MQTTManager {
     if (kDebugMode) {
       logger.d('EXAMPLE::Mosquitto client cmessageonnected....');
     }
+    _currentState.setPlayerName("Player $_identifier");
     _currentState.addDevice("$_identifier,smartwatch");
-
     _publishDeviceInfo();
 
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
@@ -125,11 +125,10 @@ class MQTTManager {
       
         
       if (_currentState.countDevices() < _maxDevices) {
-        if (pt.contains("phone") || (pt.contains("smartwatch") && !_currentState.containsDevice(pt))) {
+        if ((pt.contains("phone") || pt.contains("smartwatch")) && !(_currentState.containsDevice(pt))) {
           _currentState.addDevice(pt);
           _publishDeviceInfo();
         }
-        logger.t("NUMBER OF WATCHES: ${_currentState.countWatches()}");
       }
 
       if (pt.contains("remove")) {
@@ -155,9 +154,9 @@ class MQTTManager {
   }
 
   void _publishDeviceInfo() {
-    String message = '$_identifier,smartwatch,Player ${_currentState.countWatches()}';
+    String message = '$_identifier,smartwatch,${_currentState.getPlayerName()}';
     publish(message);
-  }
+  } 
 
   void _removeDeviceInfo() {
     String message = 'remove,$_identifier';
