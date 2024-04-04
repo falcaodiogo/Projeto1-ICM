@@ -6,10 +6,12 @@ import 'package:phone_main/widgets/timerwidget.dart';
 import 'package:phone_main/winner.dart';
 
 Widget columnGameState(BuildContext context, IsarService isarService) {
+
   void goToPage4() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EndPage(isarService: isarService)),
+      MaterialPageRoute(
+          builder: (context) => EndPage(isarService: isarService)),
     );
   }
 
@@ -24,15 +26,19 @@ Widget columnGameState(BuildContext context, IsarService isarService) {
         StreamBuilder<List<User>>(
           stream: isarService.listenUser(),
           builder: (context, snapshot) {
+
             if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             }
+
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // Show a loading indicator while waiting
+              return const CircularProgressIndicator();
             }
+
             if (snapshot.data == null) {
-              return const Text('No data available'); // Show a message when there's no data
+              return const Text('No data available');
             }
+
             return Column(
               children: snapshot.data!.map((user) {
                 return Column(
@@ -44,7 +50,6 @@ Widget columnGameState(BuildContext context, IsarService isarService) {
                       heartrate: user.heartrate!.isNotEmpty ? user.heartrate!.last.toString() : "",
                     ),
                     const SizedBox(height: 35),
-                    
                   ],
                 );
               }).toList(),

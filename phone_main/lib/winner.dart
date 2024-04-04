@@ -7,6 +7,7 @@ import 'package:phone_main/widgets/yellowbutton.dart';
 
 // ignore: use_key_in_widget_constructors
 class EndPage extends StatefulWidget {
+  
   final IsarService isarService;
 
   // ignore: use_key_in_widget_constructors
@@ -19,34 +20,42 @@ class EndPage extends StatefulWidget {
 }
 
 class _EndPageState extends State<EndPage> {
+
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static const accentColor = Color.fromARGB(255, 255, 238, 0);
-  
+
   List<User> users = List<User>.empty(growable: true);
   bool blurEnabled = false;
 
   @override
   void initState() {
+
     super.initState();
     _toggleBlurEveryTwoSeconds();
     _loadUserData();
+
   }
 
   Future<void> _loadUserData() async {
 
     List<User> usersList = await widget.isarService.getAllUser();
-    
+
     setState(() {
       users = usersList;
     });
+
   }
 
   void _toggleBlurEveryTwoSeconds() {
+
     Timer.periodic(const Duration(seconds: 1), (timer) {
+
       setState(() {
         blurEnabled = !blurEnabled;
       });
+
     });
+
   }
 
   @override
@@ -86,18 +95,18 @@ class _EndPageState extends State<EndPage> {
                     _gameResult(),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 46,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none,
-                        fontFamily: 'Roboto'),
+                      color: Colors.black,
+                      fontSize: 46,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none,
+                      fontFamily: 'Roboto'
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: kToolbarHeight),
               yellowButton(
-                "Start again",
-                () {
+                "Start again", () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
               ),
@@ -127,17 +136,24 @@ class _EndPageState extends State<EndPage> {
   }
 
   String _gameResult() {
+
     List<double> scores = List<double>.empty(growable: true);
     Map<double, String> scoreMap = <double, String>{};
-  
+
+    // Calculate the average heartrate for each user
     for (User user in users) {
+
       double score = ((user.heartrate!.reduce((a, b) => a + b)) / user.heartrate!.length).roundToDouble();
       scores.add(score);
       scoreMap[score] = user.name!;
+
     }
 
+    // Order the scores in ascending order
     scores.sort();
-    
-    return scores.first == scores.last ? "Its a tie with a score of ${scores.last} for both players" : "${scoreMap[scores.last]} with a score of ${scores.last}";
+
+    return scores.first == scores.last ?
+      "Its a tie with a score of ${scores.last} for both players" :
+      "${scoreMap[scores.last]} with a score of ${scores.last}";
   }
 }

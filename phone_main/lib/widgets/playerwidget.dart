@@ -4,13 +4,19 @@ import 'package:phone_main/mqtt/state/mqttappstate.dart';
 import 'package:provider/provider.dart';
 
 class PlayerWidget extends StatefulWidget {
+
   final Color brightColor;
   final Color darkColor;
   final String name;
   final String heartrate;
 
-  const PlayerWidget(
-      {super.key, required this.brightColor, required this.darkColor, required this.name, required this.heartrate});
+  const PlayerWidget({
+    super.key,
+    required this.brightColor,
+    required this.darkColor,
+    required this.name,
+    required this.heartrate
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -19,6 +25,7 @@ class PlayerWidget extends StatefulWidget {
 }
 
 class _PlayerWidgetState extends State<PlayerWidget> {
+  
   late MQTTAppState currentAppState;
   final Logger logger = Logger();
 
@@ -29,7 +36,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    
     final MQTTAppState appState = Provider.of<MQTTAppState>(context);
     currentAppState = appState;
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // ignore: use_key_in_widget_constructors
 class TimerWidget extends StatefulWidget {
+  
   final VoidCallback onTimerEnd;
 
   // ignore: use_key_in_widget_constructors, prefer_const_constructors_in_immutables
@@ -14,13 +15,16 @@ class TimerWidget extends StatefulWidget {
 }
 
 class _TimerWidgetState extends State<TimerWidget> {
+
   int _timerCountdown = 30;
   Timer? _timer;
 
   @override
   void initState() {
+
     super.initState();
     startTimer();
+
   }
 
   @override
@@ -48,22 +52,32 @@ class _TimerWidgetState extends State<TimerWidget> {
   }
 
   void startTimer() {
+
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(oneSec, (Timer timer) {
+
       setState(() {
+
         if (_timerCountdown < 1) {
+
           timer.cancel();
           widget.onTimerEnd(); // Notify parent when timer ends
+          
         } else {
           _timerCountdown--;
         }
+
       });
+
     });
+
   }
 
   @override
   void dispose() {
+
     _timer?.cancel();
     super.dispose();
+    
   }
 }

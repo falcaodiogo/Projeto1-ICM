@@ -8,11 +8,12 @@ import 'package:provider/provider.dart';
 
 // ignore: use_key_in_widget_constructors
 class GamePage extends StatelessWidget {
+  
   final Logger logger = Logger();
-  final IsarService isarService; 
+  final IsarService isarService;
   final BuildContext context;
 
-  GamePage({super.key, required this.isarService, required this.context}); 
+  GamePage({super.key, required this.isarService, required this.context});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class GamePage extends StatelessWidget {
           child: Column(
             children: <Widget>[
               appBar(context),
-              columnGameState(context, isarService), 
+              columnGameState(context, isarService),
             ],
           ),
         ),

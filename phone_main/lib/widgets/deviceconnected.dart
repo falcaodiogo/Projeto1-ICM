@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-Widget deviceConnected({ required String deviceName, required IconData icon, bool isConnected = false}) {
+Widget deviceConnected({ required String deviceName, required IconData icon, bool isConnected = false }) {
+
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -21,4 +22,5 @@ Widget deviceConnected({ required String deviceName, required IconData icon, boo
       )
     ],
   );
+  
 }
