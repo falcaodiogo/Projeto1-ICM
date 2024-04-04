@@ -1,4 +1,5 @@
 # Heart Serious Game (HS Game)
+<img src="https://github.com/falcaodiogo/Projeto1-ICM/assets/109617044/510c1c5f-e6ca-475a-9898-f58ff4810a55" alt="drawing" width="100"/>
 
 ## Quick Start
 
