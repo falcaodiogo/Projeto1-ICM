@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:phone_main/endpage.dart';
 import 'package:phone_main/heartbeats.dart';
 
-Widget yellowButton(
-    String text, Function onPressed, BuildContext context, int first) {
+Widget yellowButton(String text, Function onPressed, BuildContext context, int first, String playerName) {
   return ElevatedButton(
     onPressed: () {
       onPressed();
       switch (first) {
+
         case 0:
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => GamePage()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => GamePage(playerName)));
           break;
+
         case 1:
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => EndPage()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => EndPage()));
           break;
+          
         default:
           Navigator.of(context).popUntil((route) => route.isFirst);
       }

@@ -5,27 +5,36 @@ import 'package:phone_main/widgets/yellowbutton.dart';
 
 // ignore: use_key_in_widget_constructors
 class EndPage extends StatefulWidget {
+
   @override
+  // ignore: library_private_types_in_public_api
   _EndPageState createState() => _EndPageState();
 }
 
 class _EndPageState extends State<EndPage> {
+
   static const textColor = Color.fromARGB(255, 224, 241, 255);
 
   bool blurEnabled = false;
 
   @override
   void initState() {
+
     super.initState();
     _toggleBlurEveryTwoSeconds();
+
   }
 
   void _toggleBlurEveryTwoSeconds() {
+
     Timer.periodic(const Duration(seconds: 1), (timer) {
+
       setState(() {
         blurEnabled = !blurEnabled;
       });
+      
     });
+
   }
 
   @override
@@ -56,7 +65,7 @@ class _EndPageState extends State<EndPage> {
               const SizedBox(height: 30),
               const SizedBox(height: kToolbarHeight),
               Center(
-                child: yellowButton("Start again", () => {}, context, 2),
+                child: yellowButton("Start again", () => {}, context, 2, ""),
               ),
             ],
           ),

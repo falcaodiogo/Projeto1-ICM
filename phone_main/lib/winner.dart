@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:phone_main/database/user.dart';
 import 'package:phone_main/database/userservice.dart';
 import 'package:phone_main/widgets/yellowbutton.dart';
 
 // ignore: use_key_in_widget_constructors
 class EndPage extends StatefulWidget {
+  
   final IsarService isarService;
 
   // ignore: use_key_in_widget_constructors
@@ -18,38 +20,42 @@ class EndPage extends StatefulWidget {
 }
 
 class _EndPageState extends State<EndPage> {
+
   static const textColor = Color.fromARGB(255, 224, 241, 255);
   static const accentColor = Color.fromARGB(255, 255, 238, 0);
 
-  late Future<List<double>> user1;
-  late Future<List<double>> user2;
-  List<double> user1Data = List<double>.empty(growable: true);
-  List<double> user2Data = List<double>.empty(growable: true);
+  List<User> users = List<User>.empty(growable: true);
   bool blurEnabled = false;
 
   @override
   void initState() {
+
     super.initState();
     _toggleBlurEveryTwoSeconds();
     _loadUserData();
+
   }
 
   Future<void> _loadUserData() async {
-    List<double> user1List = await widget.isarService.getHeartRateListById(1);
-    List<double> user2List = await widget.isarService.getHeartRateListById(2);
-    
+
+    List<User> usersList = await widget.isarService.getAllUser();
+
     setState(() {
-      user1Data = user1List;
-      user2Data = user2List;
+      users = usersList;
     });
+
   }
 
   void _toggleBlurEveryTwoSeconds() {
+
     Timer.periodic(const Duration(seconds: 1), (timer) {
+
       setState(() {
         blurEnabled = !blurEnabled;
       });
+
     });
+
   }
 
   @override
@@ -89,18 +95,18 @@ class _EndPageState extends State<EndPage> {
                     _gameResult(),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 46,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none,
-                        fontFamily: 'Roboto'),
+                      color: Colors.black,
+                      fontSize: 46,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none,
+                      fontFamily: 'Roboto'
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: kToolbarHeight),
               yellowButton(
-                "Start again",
-                () {
+                "Start again", () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
               ),
@@ -130,31 +136,24 @@ class _EndPageState extends State<EndPage> {
   }
 
   String _gameResult() {
-    double score1 = 0.0;
-    double score2 = 0.0;
-    String name1 = "Player 1";
-    String name2 = "Player 2";
 
-    // calculate the average of the list
-    for (int i = 0; i < user1Data.length; i++) {
-      if (user1Data[i] == 0) {
-        continue;
-      } else { 
-        score1 += user1Data[i];
-      }
+    List<double> scores = List<double>.empty(growable: true);
+    Map<double, String> scoreMap = <double, String>{};
+
+    // Calculate the average heartrate for each user
+    for (User user in users) {
+
+      double score = ((user.heartrate!.reduce((a, b) => a + b)) / user.heartrate!.length).roundToDouble();
+      scores.add(score);
+      scoreMap[score] = user.name!;
+
     }
 
-    for (int i = 0; i < user2Data.length; i++) {
-      if (user2Data[i] == 0) {
-        continue;
-      } else { 
-        score2 += user2Data[i];
-      }
-    }
+    // Order the scores in ascending order
+    scores.sort();
 
-    score1 = score1 / user1Data.length;
-    score2 = score2 / user2Data.length;
-    
-    return score1 == score2 ? "It's a tie!" : score1 > score2 ? name1 : name2;
+    return scores.first == scores.last ?
+      "Its a tie with a score of ${scores.last} for both players" :
+      "${scoreMap[scores.last]} with a score of ${scores.last}";
   }
 }
