@@ -1,8 +1,27 @@
-# Projeto1-ICM
-Project 1 of ICM (Introdução à Computação Móvel) 2023/2024
+# Heart Serious Game (HS Game)
 
-## Alterações que fiz
+## Quick Start
 
-- __phone_main__ conecta e recebe os batimentos
+Ensure you have 1 phone and 2 WearOS-compatible smartwatches. Connect each device via ADB wireless.
 
-- __wear_mqtt__ conecta e envia batimentos cardiacos assim que o switch é ligado
+1. For the smartwatches, navigate to the `wear_mqtt` folder:
+   ```bash
+   flutter run
+   ```
+
+2. For the smartphone, navigate to the `phone_main` folder:
+   ```bash
+   flutter run
+   ```
+
+## Introduction
+
+Developed for the ICM (Introduction to Mobile Computing) class, this project involves creating a cross-platform mobile application using Flutter. Our project, Heart Serious Game (HS Game), is a competitive game utilizing WearOS smartwatches to monitor heart rates, with the data visualized in real-time on a mobile device.
+
+## Project Context
+
+The HS Game leverages the heart rate monitoring capabilities of WearOS smartwatches. Two players compete by maintaining higher average heart rates over the game duration. The game's novelty lies in its use of technology to create an immersive and competitive experience.
+
+## Made by 
+
+### [Diogo Falcão](https://github.com/falcaodiogo) and [José Gameiro](https://github.com/zegameiro)
